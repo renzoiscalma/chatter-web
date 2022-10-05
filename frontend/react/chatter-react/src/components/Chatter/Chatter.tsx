@@ -16,9 +16,9 @@ interface ChatterProps {
 
 type MESSAGEACTIONTYPE = 
 	| {type: "FETCH_ALL", payload: any } // todo change proper types
-	| {type: SendStatus.FAILED, payload: Message & {index: number} }
+	| {type: SendStatus.FAILED, payload: Message & {localDateSent: string} }
 	| {type: SendStatus.SENDING, payload: Message & {index: number, callback: Function} }
-	| {type: SendStatus.SENT, payload: Message & {index: number} }
+	| {type: SendStatus.SENT, payload: Message & {localDateSent: string} }
 
 function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Message[] {
 	let messages = state;
@@ -41,13 +41,21 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 				variables: {
 					to: action.payload.to,
 					from: action.payload.sender,
-					message: action.payload.message
+					message: action.payload.message,
+					localDateSent: action.payload.localDateSent
 				}
 			});
 			return [...messages]
-		case SendStatus.SENT:
-			messages[action.payload.index].sendStatus = SendStatus.SENT;
+		case SendStatus.SENT: {
+			let { localDateSent, sender } = action.payload;
+			console.log(action.payload, messages)
+			let targetMessage = messages.filter((message) => (
+				message.localDateSent === localDateSent && message.sender === sender
+			));
+			targetMessage[0].sendStatus = SendStatus.SENT;
+			console.log(targetMessage)
 			return [...messages]
+		}
 		default:
 			throw new Error();
 	}
@@ -63,6 +71,7 @@ function Chatter() {
 		}
 	});
 
+	// unless yung state ng message is contained to itself
 	const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
 	const chatterContainer: SxProps = {
@@ -84,6 +93,7 @@ function Chatter() {
 				to: userContext.lobbyId,
 				sendStatus: SendStatus.SENDING,
 				index: messageStatusIndex,
+				localDateSent: new Date().getTime()+"",
 				callback: sendMessage
 			} 
 		});
@@ -97,8 +107,15 @@ function Chatter() {
 	}, [initialized, data]);
 
 	useEffect(() => {
-		console.log(sendMessageProperties);
-	}, [sendMessageProperties])
+		if (sendMessageProperties?.data) {
+			let { message, localDateSent } = sendMessageProperties.data.addMessage;
+			dispatchMessage({type: SendStatus.SENT, payload: {...message, localDateSent, sender: message.from.id }})
+		}
+
+		if (sendMessageProperties?.error) {
+			console.log('ERROR HAS OCCURED');
+		}
+	}, [sendMessageProperties.data])
 
 	return (
 		<Box sx={chatterContainer}>
