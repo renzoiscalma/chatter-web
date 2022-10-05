@@ -4,7 +4,7 @@ export default interface Message {
 	message: string;
 	sender: string;
 	to: string;
-	date: Date;
+	date?: Date;
 	imgUrl?: string;
 	sendStatus?: SendStatus;
 }
