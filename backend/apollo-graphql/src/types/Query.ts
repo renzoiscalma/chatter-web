@@ -5,7 +5,7 @@ const Query = gql`
 		getUser(id: ID!): User
 		getLobby(id: ID!): Lobby
 		getMessage(id: ID!): Message
-		getMessagesOnLobby(lobbyId: ID!): [Message]
+		getMessagesOnLobby(lobbyId: ID!): GetMessagesOnLobbyResponse
 	}
 `;
 
