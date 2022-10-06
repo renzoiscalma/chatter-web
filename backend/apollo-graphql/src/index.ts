@@ -16,9 +16,5 @@ connectMongoose().then(() => {
 	const lobbyCollection = LobbyCollection;
 });
 
-// const server = new ApolloServer({
-// 	schema,
-// });
-
 startApolloServer();
 
