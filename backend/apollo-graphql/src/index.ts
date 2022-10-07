@@ -7,6 +7,8 @@ import LobbyCollection from "./db/interface/LobbySchema";
 import UserCollection from "./db/interface/UserSchema";
 import startApolloServer from './apollo';
 
+import startRedisServer from './redis';
+
 dotenv.config();
 
 connectMongoose().then(() => {
@@ -17,4 +19,6 @@ connectMongoose().then(() => {
 });
 
 startApolloServer();
+
+startRedisServer();
 
