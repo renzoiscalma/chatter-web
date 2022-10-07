@@ -6,9 +6,10 @@ import Sender from './Sender';
 import Message from './interface/Message';
 import SendStatus from './interface/SendStatus';
 import samepleData from './sampledata';
-import { QueryResult, useMutation, useQuery } from '@apollo/client';
-import { GET_MESSAGES_ON_LOBBY, SEND_MESSAGE } from '../Queries/Chatter';
+import { QueryResult, useMutation, useQuery, useSubscription } from '@apollo/client';
+import { GET_MESSAGES_ON_LOBBY, MESSAGE_ADDED_SUBSCRIPTION, SEND_MESSAGE } from '../Queries/Chatter';
 import { UserContext } from '../Layout/Layout';
+import { MESSAGE_ADDED_TOPIC } from '../../util/constants';
 
 interface ChatterProps {
 	messages: Message[];
@@ -74,6 +75,8 @@ function Chatter() {
 	// unless yung state ng message is contained to itself
 	const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
+	const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION);
+
 	const chatterContainer: SxProps = {
 		height: '100%',
 		display: 'flex',
@@ -116,6 +119,10 @@ function Chatter() {
 			console.log('ERROR HAS OCCURED');
 		}
 	}, [sendMessageProperties.data])
+
+	useEffect(() => {
+		console.log(newMessage);
+	}, [newMessage]);
 
 	return (
 		<Box sx={chatterContainer}>

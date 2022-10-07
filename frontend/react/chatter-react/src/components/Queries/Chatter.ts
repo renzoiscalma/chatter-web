@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-const SEND_MESSAGE = gql`
+export const SEND_MESSAGE = gql`
 	mutation($to: ID, $from: ID, $message: String, $localDateSent: String) {
 		addMessage(to: $to, from: $from, message: $message, localDateSent: $localDateSent) {
 			code
@@ -20,7 +20,7 @@ const SEND_MESSAGE = gql`
 	}
 `;
 
-const GET_MESSAGES_ON_LOBBY = gql`
+export const GET_MESSAGES_ON_LOBBY = gql`
 	query getMessagesOnLobby($lobbyId: ID!) {
 		getMessagesOnLobby(lobbyId: $lobbyId) {
 			code
@@ -38,7 +38,8 @@ const GET_MESSAGES_ON_LOBBY = gql`
 	}
 `
 
-export {
-	GET_MESSAGES_ON_LOBBY,
-	SEND_MESSAGE
-};
+export const MESSAGE_ADDED_SUBSCRIPTION = gql`
+	subscription {
+		messageAdded
+	}
+`; 
