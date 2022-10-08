@@ -10,6 +10,7 @@ import AddMessageResponse from "./types/responses/AddMessageResponse";
 import GetMessagesOnLobbyResponse from "./types/responses/GetMessageOnLobbyResponse";
 import Subscription from "./types/Subscription";
 import subResolver from "./resolvers/Subscription";
+import AddMessageTopicResponse from "./types/responses/AddMessageTopicResponse";
 
 export default makeExecutableSchema({
 	typeDefs: [
@@ -21,6 +22,7 @@ export default makeExecutableSchema({
 		Lobby,
 		AddMessageResponse,
 		GetMessagesOnLobbyResponse,
+		AddMessageTopicResponse,
 	],
 	resolvers: [
 		subResolver,

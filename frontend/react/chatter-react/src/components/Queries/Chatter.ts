@@ -39,7 +39,18 @@ export const GET_MESSAGES_ON_LOBBY = gql`
 `
 
 export const MESSAGE_ADDED_SUBSCRIPTION = gql`
-	subscription {
-		messageAdded
-	}
+subscription MessageAdded($lobbyId: ID!) {
+  messageAdded(lobbyId: $lobbyId) {
+		lobbyId
+    messages {
+			from {
+				id
+				username
+				type
+			}
+			message
+			date
+		}
+  }
+}
 `; 

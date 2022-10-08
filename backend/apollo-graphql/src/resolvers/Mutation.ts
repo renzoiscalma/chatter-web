@@ -26,13 +26,27 @@ const mutationResolver = {
 			});
 
 			await newMessage.save().then(async (newMessage) => {
-				await pubsub.publish(MESSAGE_ADDED_TOPIC, {messageAdded: "LOL"});
-				await newMessage.populate('from to')
+				await newMessage.populate([
+					'from',
+					{
+						path: 'to',
+						populate: {
+							path: 'currentUsers'
+						}
+					}
+				])
 			}).catch(err => { // todo have a proper middleware for catching errrors
 				console.error(err);
 				return undefined;
 			});
-
+			
+			await pubsub.publish(MESSAGE_ADDED_TOPIC, {
+				messageAdded: {
+					lobbyId: newMessage.get('to')?._id,
+					messages: [newMessage].map((newMessage) => newMessage.toJSON({virtuals: true})) // TODO replace newMessage in the future
+				}
+			});
+			
 			return (newMessage) 
 				? {
 					code: 200,
