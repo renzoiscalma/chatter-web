@@ -7,4 +7,5 @@ export default interface Message {
 	date?: Date;
 	imgUrl?: string;
 	sendStatus?: SendStatus;
+	localDateSent?: string;
 }

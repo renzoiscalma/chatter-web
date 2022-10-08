@@ -5,6 +5,7 @@ const AddMessageResponse = gql`
 		code: Int!
 		success: Boolean!
 		message: Message
+		localDateSent: String
 	}
 `;
 
