@@ -9,7 +9,6 @@ import samepleData from './sampledata';
 import { QueryResult, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES_ON_LOBBY, MESSAGE_ADDED_SUBSCRIPTION, SEND_MESSAGE } from '../Queries/Chatter';
 import { UserContext } from '../Layout/Layout';
-import { MESSAGE_ADDED_TOPIC } from '../../util/constants';
 
 interface ChatterProps {
 	messages: Message[];
