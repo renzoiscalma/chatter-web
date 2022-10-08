@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import Box from '@mui/material/Box';
 import { Divider, SxProps } from '@mui/material';
 import Messages from './Messages';
@@ -6,8 +6,10 @@ import Sender from './Sender';
 import Message from './interface/Message';
 import SendStatus from './interface/SendStatus';
 import samepleData from './sampledata';
-import { QueryResult, useQuery } from '@apollo/client';
-import { GET_MESSAGES_ON_LOBBY } from '../Queries/Layout';
+import { QueryResult, useMutation, useQuery, useSubscription } from '@apollo/client';
+import { GET_MESSAGES_ON_LOBBY, MESSAGE_ADDED_SUBSCRIPTION, SEND_MESSAGE } from '../Queries/Chatter';
+import { UserContext } from '../Layout/Layout';
+import { MESSAGE_ADDED_TOPIC } from '../../util/constants';
 
 interface ChatterProps {
 	messages: Message[];
@@ -15,9 +17,11 @@ interface ChatterProps {
 
 type MESSAGEACTIONTYPE = 
 	| {type: "FETCH_ALL", payload: any } // todo change proper types
-	| {type: SendStatus.FAILED, payload: Message & {index: number} }
-	| {type: SendStatus.SENDING, payload: Message & {index: number} }
-	| {type: SendStatus.SENT, payload: Message & {index: number} }
+	| {type: SendStatus.FAILED, payload: Message & {localDateSent: string} }
+	| {type: SendStatus.SENDING, payload: Message & {index: number, callback: Function} }
+	| {type: SendStatus.SENT, payload: Message & {localDateSent: string } }
+	| {type: "NEW_MESSAGE", payload: Message[]} 
+
 
 function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Message[] {
 	let messages = state;
@@ -27,29 +31,62 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 				return {
 					date: new Date(+message.date),
 					message: message.message,
-					sender: message.from.username,
+					sender: message.from.id,
 					to: "Lobby",
 					sendStatus: SendStatus.SENT
 				}
 			})
 		case SendStatus.FAILED:
 			return {} as Message[];
-		case SendStatus.SENDING:
+		case SendStatus.SENDING: {
+			let {to, sender, message, localDateSent} = action.payload;
 			messages.push(action.payload);
+			action.payload.callback({
+				variables: {
+					to,
+					from: sender,
+					message,
+					localDateSent
+				}
+			});
 			return [...messages]
-		case SendStatus.SENT:
-			messages[action.payload.index].sendStatus = SendStatus.SENT;
+		}
+		case SendStatus.SENT: {
+			let { localDateSent, sender } = action.payload;
+			console.log(action.payload, messages)
+			let targetMessage = messages.filter((message) => (
+				message.localDateSent === localDateSent && message.sender === sender
+			));
+			targetMessage[0].sendStatus = SendStatus.SENT;
+			console.log(targetMessage)
 			return [...messages]
+		}
+		case "NEW_MESSAGE": {
+			// todo sort 
+			return [...messages, ...action.payload];
+			break;
+		}
 		default:
 			throw new Error();
 	}
 }
 
 function Chatter() {
+	const userContext = useContext(UserContext);
+
 	// TODO QUERY RESULT ADD PROPER TYPES
 	const { loading, error, data }: QueryResult<any, any> = useQuery(GET_MESSAGES_ON_LOBBY, {
 		variables: {
-			lobbyId: "633c71d566f605851babba3e"
+			lobbyId: userContext.lobbyId
+		}
+	});
+
+	// unless yung state ng message is contained to itself
+	const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
+
+	const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+		variables: {
+			lobbyId: userContext.lobbyId
 		}
 	});
 
@@ -63,25 +100,44 @@ function Chatter() {
 	const [messages, dispatchMessage] = useReducer(sendMessageReducer, initialMessages);
 	const [initialized, setInitialized] = useState<boolean>(false);
 
-	const handleSendMessage = (message: Message) => {
+	const handleSendMessage = (message: string) => {
 		const messageStatusIndex: number = messages.length;
-		console.log("message sending... [" + message.message + "]");
 
-
-		// sendMessageAPIHere
-		dispatchMessage({ type: SendStatus.SENDING, payload: {...message, index: messageStatusIndex} });
-
-		setTimeout(() => {
-			dispatchMessage({ type: SendStatus.SENT, payload: {...message, index: messageStatusIndex} });
-		}, 3000);
+		dispatchMessage({ type: SendStatus.SENDING, payload: {
+				message: message,
+				sender: userContext.userId,
+				to: userContext.lobbyId,
+				sendStatus: SendStatus.SENDING,
+				index: messageStatusIndex,
+				localDateSent: new Date().getTime()+"",
+				callback: sendMessage
+			} 
+		});
 	}
-	
+
 	useEffect(() => {
-		if (!initialized && data) {
+		if (!initialized && data?.getMessagesOnLobby?.success) {
 			setInitialized(true);
-			dispatchMessage({type: "FETCH_ALL", payload: data.getMessagesOnLobby});
+			dispatchMessage({type: "FETCH_ALL", payload: data.getMessagesOnLobby.data});
 		}
 	}, [initialized, data]);
+
+	useEffect(() => {
+		if (sendMessageProperties?.data) {
+			let { message, localDateSent } = sendMessageProperties.data.addMessage;
+			dispatchMessage({type: SendStatus.SENT, payload: {...message, localDateSent, sender: message.from.id }})
+		}
+
+		if (sendMessageProperties?.error) {
+			console.log('ERROR HAS OCCURED');
+		}
+	}, [sendMessageProperties.data])
+
+	useEffect(() => {
+		// todo add types
+		if (newMessage?.data?.messageAdded)
+			dispatchMessage({type: "NEW_MESSAGE", payload: newMessage.data.messageAdded.messages as Message[]})
+	}, [newMessage]);
 
 	return (
 		<Box sx={chatterContainer}>

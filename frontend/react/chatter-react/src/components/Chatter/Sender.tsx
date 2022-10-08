@@ -6,7 +6,7 @@ import Message from "./interface/Message";
 import { UserContext } from "../Layout/Layout";
 
 interface SenderProps {
-	handleSendMessage(message: Message): void;
+	handleSendMessage(message: string): void;
 }
 
 function Sender({handleSendMessage}: SenderProps): JSX.Element {
@@ -29,7 +29,7 @@ function Sender({handleSendMessage}: SenderProps): JSX.Element {
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
 		if (event.key === "Enter") {
-			handleSendMessage(generateMessage());
+			handleSendMessage(values.message);
 			setValues({message: ''});
 		}
 	}
@@ -38,20 +38,12 @@ function Sender({handleSendMessage}: SenderProps): JSX.Element {
 		setValues({[prop]: event.target.value});
 	}
 
-	const generateMessage = (): Message => ({
-		message: values.message,
-		sender: userContext.username, // TODO be changed
-		to: "World", // TODO change
-		date: new Date(),
-		sendStatus: SendStatus.SENDING,
-	});
-
 	const sendButton = (
 		<InputAdornment position="end">
 			<IconButton
 				aria-label="send message"
 				onClick={() => {
-					handleSendMessage(generateMessage());
+					handleSendMessage(values.message);
 					setValues({message: ''});
 				}}
 				edge="end"

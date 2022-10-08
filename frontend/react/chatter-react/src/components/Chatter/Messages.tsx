@@ -110,20 +110,20 @@ function Messages({ messages }: MessageProps): JSX.Element {
 		const tail: boolean = (!nextMessage || nextMessage.sender !== message.sender) ? true : false;
 		let tailStyle: SxProps = {} as SxProps;
 		if (tail)
-			tailStyle = (message.sender === userContext.username) ?  tailSelfStyle : tailOtherStyle;
+			tailStyle = (message.sender === userContext.userId) ?  tailSelfStyle : tailOtherStyle;
 		return {
 			...messageBubbleStyle,
 			...tailStyle,
-			backgroundColor: message.sender !== userContext.username ?  "#e5e5ea" : "#248bf5",
-			color: message.sender !== userContext.username ? "#000" : "#fff",
-			alignSelf: message.sender !== userContext.username ? "flex-start" : "flex-end",
-			marginLeft: message.sender !== userContext.username ? "16px" : "0px",
-			marginRight: message.sender !== userContext.username ? "0px" : "16px",
+			backgroundColor: message.sender !== userContext.userId ?  "#e5e5ea" : "#248bf5",
+			color: message.sender !== userContext.userId ? "#000" : "#fff",
+			alignSelf: message.sender !== userContext.userId ? "flex-start" : "flex-end",
+			marginLeft: message.sender !== userContext.userId ? "16px" : "0px",
+			marginRight: message.sender !== userContext.userId ? "0px" : "16px",
 		};
 	};
 
 	const generateMessageStatus = (message: Message): JSX.Element | null => {
-		if (message.sender !== userContext.username) return null;
+		if (message.sender !== userContext.userId) return null;
 		if (message.sendStatus === SendStatus.FAILED) {
 			return <PriorityHigh sx={iconStyle}></PriorityHigh>
 		} else if (message.sendStatus === SendStatus.SENDING) {

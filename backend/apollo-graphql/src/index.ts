@@ -1,10 +1,13 @@
-import schema from "./schema";
-import { ApolloServer } from "apollo-server";
 import dotenv from 'dotenv';
+
 import connectMongoose from "./db/connect";
+
 import MessageCollection from "./db/interface/MessageSchema";
 import LobbyCollection from "./db/interface/LobbySchema";
 import UserCollection from "./db/interface/UserSchema";
+import startApolloServer from './apollo';
+
+import startRedisServer from './redis';
 
 dotenv.config();
 
@@ -15,13 +18,7 @@ connectMongoose().then(() => {
 	const lobbyCollection = LobbyCollection;
 });
 
-const server = new ApolloServer({
-	schema,
-});
+startApolloServer();
 
-server.listen(4000).then(({ url }) => {
-	console.log(`🚀  Server ready at ${url}`);
-});
-
-
+startRedisServer();
 
