@@ -19,7 +19,9 @@ type MESSAGEACTIONTYPE =
 	| {type: "FETCH_ALL", payload: any } // todo change proper types
 	| {type: SendStatus.FAILED, payload: Message & {localDateSent: string} }
 	| {type: SendStatus.SENDING, payload: Message & {index: number, callback: Function} }
-	| {type: SendStatus.SENT, payload: Message & {localDateSent: string} }
+	| {type: SendStatus.SENT, payload: Message & {localDateSent: string } }
+	| {type: "NEW_MESSAGE", payload: Message[]} 
+
 
 function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Message[] {
 	let messages = state;
@@ -36,17 +38,19 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 			})
 		case SendStatus.FAILED:
 			return {} as Message[];
-		case SendStatus.SENDING:
+		case SendStatus.SENDING: {
+			let {to, sender, message, localDateSent} = action.payload;
 			messages.push(action.payload);
 			action.payload.callback({
 				variables: {
-					to: action.payload.to,
-					from: action.payload.sender,
-					message: action.payload.message,
-					localDateSent: action.payload.localDateSent
+					to,
+					from: sender,
+					message,
+					localDateSent
 				}
 			});
 			return [...messages]
+		}
 		case SendStatus.SENT: {
 			let { localDateSent, sender } = action.payload;
 			console.log(action.payload, messages)
@@ -56,6 +60,11 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 			targetMessage[0].sendStatus = SendStatus.SENT;
 			console.log(targetMessage)
 			return [...messages]
+		}
+		case "NEW_MESSAGE": {
+			// todo sort 
+			return [...messages, ...action.payload];
+			break;
 		}
 		default:
 			throw new Error();
@@ -75,7 +84,11 @@ function Chatter() {
 	// unless yung state ng message is contained to itself
 	const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
-	const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION);
+	const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+		variables: {
+			lobbyId: userContext.lobbyId
+		}
+	});
 
 	const chatterContainer: SxProps = {
 		height: '100%',
@@ -121,7 +134,9 @@ function Chatter() {
 	}, [sendMessageProperties.data])
 
 	useEffect(() => {
-		console.log(newMessage);
+		// todo add types
+		if (newMessage?.data?.messageAdded)
+			dispatchMessage({type: "NEW_MESSAGE", payload: newMessage.data.messageAdded.messages as Message[]})
 	}, [newMessage]);
 
 	return (
