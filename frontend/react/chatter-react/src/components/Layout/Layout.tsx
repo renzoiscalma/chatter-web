@@ -6,18 +6,23 @@ import { createContext, useState } from 'react';
 
 export const UserContext = createContext({
 	username: '',
+	userId: '',
+	lobbyId: '',
 	setUsername: (username: string) => {},
 });
 
 function Layout(): JSX.Element {
 	const [username, setUsername] = useState<string>('Foo Bar');
+	const [userId, setUserId] = useState<string>('633c71d566f605851babba39');
+	const [lobbyId, setLobbyId] = useState<string>('633c71d566f605851babba3e');
+	
 	const handleSetUsername = (username: string) => {
 		setUsername(username);
 	}
 
 	// modal should be here somewhere
 	return (
-		<UserContext.Provider value={{username, setUsername: handleSetUsername}}>
+		<UserContext.Provider value={{username, setUsername: handleSetUsername, userId, lobbyId}}>
 			<Box sx={gridContainer}>
 				<Box sx={videoContainer}>
 					<Video videoId='rokGy0huYEA'></Video>
