@@ -11,6 +11,8 @@ import GetMessagesOnLobbyResponse from "./types/responses/GetMessageOnLobbyRespo
 import Subscription from "./types/Subscription";
 import subResolver from "./resolvers/Subscription";
 import AddMessageTopicResponse from "./types/responses/AddMessageTopicResponse";
+import GenericResponse from "./types/responses/GenericResponse";
+import AddNewUserResponse from "./types/responses/AddNewUserResponse";
 
 export default makeExecutableSchema({
 	typeDefs: [
@@ -20,9 +22,11 @@ export default makeExecutableSchema({
 		User,
 		Message,
 		Lobby,
+		AddNewUserResponse,
 		AddMessageResponse,
 		GetMessagesOnLobbyResponse,
 		AddMessageTopicResponse,
+		GenericResponse
 	],
 	resolvers: [
 		subResolver,

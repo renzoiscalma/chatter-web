@@ -1,8 +1,12 @@
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
+import { AbstractKeyword } from "typescript";
+import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
+import UserCollection from "../db/interface/UserSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
 import { pubsub } from "../redis";
 import { MESSAGE_ADDED_TOPIC } from "../utils/const";
+import { generateNewUser } from "../utils/generateNewUser";
 
 interface addMessageArgs {
 	from: string,
@@ -60,8 +64,57 @@ const mutationResolver = {
 					message: newMessage,
 					localDateSent
 				};
+		},
+		addNewUser: async () => {
+			const id = new Types.ObjectId();
+			const generatedUsername = generateNewUser(id.toString());
+			const newUser: Document = new UserCollection({
+				_id: id,
+				username: generatedUsername,
+				type: 2
+			});
+
+			newUser.save().then(async (newUser) => {
+				console.log(newUser);
+			}).catch(err => { 
+				console.log(err) 
+				return null; 
+			});
+
+			return {
+				code: (newUser) ? 200 : 500,
+				success: (newUser) ? true : false,
+				user: newUser
+			};
+		},
+		addUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
+			const filter = { _id: args.lobbyId };
+			const update = { $push: { currentUsers: args.userId }};
+			const res = await LobbyCollection.findOneAndUpdate(filter, update, { new: true })
+				.catch((err) => {
+					console.log(err);
+					return null;
+				});
+			console.log(await res?.populate('currentUsers'));
+			return {
+				code: (res) ? 200 : 500,
+				success: (res) ? true : false,
+			} 
+		},
+		removeUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
+			const filter = { _id: args.lobbyId };
+			const update = { $pullAll: { currentUsers: [args.userId] }};
+			const res = await LobbyCollection.findOneAndUpdate(filter, update, { new: true })
+				.catch(err => {
+					console.log(err);
+					return null;
+				});
+			console.log(await res?.populate('currentUsers'));
+			return {
+				code: (res) ? 200 : 500,
+				success: (res) ? true : false,
+			} 
 		}
-		
 	}
 };
 

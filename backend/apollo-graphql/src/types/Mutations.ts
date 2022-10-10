@@ -2,8 +2,13 @@ import { gql } from "apollo-server-core";
 
 const Mutations = gql`
 	type Mutation {
+		# TODO Use Extends for GenericResponse
 		addMessage(from: ID, to: ID, message: String, localDateSent: String): AddMessageResponse
-		addUser(username: String): User
+		addNewUser: AddNewUserResponse
+		addNewLobby: Lobby
+		addUserToLobby(lobbyId: ID, userId: ID): GenericResponse
+		removeUserToLobby(lobbyId: ID, userId: ID): GenericResponse
+
 	}
 `;
 
