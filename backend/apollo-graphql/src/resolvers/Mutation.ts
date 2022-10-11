@@ -1,5 +1,4 @@
 import { Document, Types } from "mongoose";
-import { AbstractKeyword } from "typescript";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
 import UserCollection from "../db/interface/UserSchema";

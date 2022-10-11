@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 const Subscription = gql`
 	type Subscription {
-		messageAdded(lobbyId: ID!): AddMessageTopicResponse
+		messageAdded(lobbyId: ID!, userId: ID!): AddMessageTopicResponse
 	} 
 `;
 

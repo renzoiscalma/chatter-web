@@ -16,13 +16,11 @@ const httpLink = new HttpLink({
   uri: process.env.REACT_APP_LOCAL_BACKEND_URI,
 })
 
-console.log(process.env.REACT_APP_LOCAL_WS_URL);
 const wsLink = new GraphQLWsLink(createClient({
   url: process.env.REACT_APP_LOCAL_WS_URL ? process.env.REACT_APP_LOCAL_WS_URL : "",
   // connectionParams: { TODO !!!!!
   //   authToken: userEvent.Token
   // }
-  
 }))
 
 const splitLink = split(
@@ -36,7 +34,7 @@ const splitLink = split(
   },
   wsLink,
   httpLink,
-)
+);
 
 const client = new ApolloClient({
   link: splitLink,

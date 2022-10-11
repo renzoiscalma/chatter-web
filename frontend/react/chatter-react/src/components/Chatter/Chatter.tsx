@@ -5,14 +5,9 @@ import Messages from './Messages';
 import Sender from './Sender';
 import Message from './interface/Message';
 import SendStatus from './interface/SendStatus';
-import samepleData from './sampledata';
 import { QueryResult, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES_ON_LOBBY, MESSAGE_ADDED_SUBSCRIPTION, SEND_MESSAGE } from '../Queries/Chatter';
 import { UserContext } from '../Layout/Layout';
-
-interface ChatterProps {
-	messages: Message[];
-}
 
 type MESSAGEACTIONTYPE = 
 	| {type: "FETCH_ALL", payload: any } // todo change proper types
@@ -24,6 +19,7 @@ type MESSAGEACTIONTYPE =
 
 function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Message[] {
 	let messages = state;
+	console.log(action.payload);
 	switch(action.type) {
 		case "FETCH_ALL":
 			return action.payload.map((message: any): Message => {
@@ -63,7 +59,6 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 		case "NEW_MESSAGE": {
 			// todo sort 
 			return [...messages, ...action.payload];
-			break;
 		}
 		default:
 			throw new Error();
@@ -74,7 +69,7 @@ function Chatter() {
 	const userContext = useContext(UserContext);
 
 	// TODO QUERY RESULT ADD PROPER TYPES
-	const { loading, error, data }: QueryResult<any, any> = useQuery(GET_MESSAGES_ON_LOBBY, {
+	const existingMessages: QueryResult<any, any> = useQuery(GET_MESSAGES_ON_LOBBY, {
 		variables: {
 			lobbyId: userContext.lobbyId
 		}
@@ -85,7 +80,8 @@ function Chatter() {
 
 	const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
 		variables: {
-			lobbyId: userContext.lobbyId
+			lobbyId: userContext.lobbyId,
+			userId: userContext.userId
 		}
 	});
 
@@ -115,11 +111,11 @@ function Chatter() {
 	}
 
 	useEffect(() => {
-		if (!initialized && data?.getMessagesOnLobby?.success) {
+		if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
 			setInitialized(true);
-			dispatchMessage({type: "FETCH_ALL", payload: data.getMessagesOnLobby.data});
+			dispatchMessage({type: "FETCH_ALL", payload: existingMessages.data.getMessagesOnLobby.data});
 		}
-	}, [initialized, data]);
+	}, [initialized, existingMessages.data]);
 
 	useEffect(() => {
 		if (sendMessageProperties?.data) {
@@ -130,7 +126,7 @@ function Chatter() {
 		if (sendMessageProperties?.error) {
 			console.log('ERROR HAS OCCURED');
 		}
-	}, [sendMessageProperties.data])
+	}, [sendMessageProperties.data, sendMessageProperties?.error])
 
 	useEffect(() => {
 		// todo add types
