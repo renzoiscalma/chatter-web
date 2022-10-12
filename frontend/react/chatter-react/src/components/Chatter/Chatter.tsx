@@ -27,6 +27,7 @@ function sendMessageReducer(state: Message[], action: MESSAGEACTIONTYPE): Messag
 					date: new Date(+message.date),
 					message: message.message,
 					sender: message.from.id,
+					senderUsername: message.from.username,
 					to: "Lobby",
 					sendStatus: SendStatus.SENT
 				}
@@ -101,6 +102,7 @@ function Chatter() {
 		dispatchMessage({ type: SendStatus.SENDING, payload: {
 				message: message,
 				sender: userContext.userId,
+				senderUsername: userContext.username,
 				to: userContext.lobbyId,
 				sendStatus: SendStatus.SENDING,
 				index: messageStatusIndex,
