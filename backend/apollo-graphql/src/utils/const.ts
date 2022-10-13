@@ -1,1 +1,1 @@
-export const MESSAGE_ADDED_TOPIC = 'messageAddedTopic';
+export const MESSAGE_ADDED_TOPIC = "messageAddedTopic";

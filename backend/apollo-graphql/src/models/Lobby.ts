@@ -1,6 +1,6 @@
-import { Types } from "mongoose"
+import { Types } from "mongoose";
 
 export interface Lobby {
-	currentUsers: [{_id: Types.ObjectId}]
-	video: string
+  currentUsers: [{ _id: Types.ObjectId }];
+  video: string;
 }

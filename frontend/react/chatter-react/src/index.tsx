@@ -1,39 +1,49 @@
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, split } from '@apollo/client';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
-import { createClient } from 'graphql-ws';
-import { getMainDefinition } from '@apollo/client/utilities';
-import userEvent from '@testing-library/user-event';
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  split,
+} from "@apollo/client";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
+import userEvent from "@testing-library/user-event";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
 const httpLink = new HttpLink({
   uri: process.env.REACT_APP_LOCAL_BACKEND_URI,
-})
+});
 
-const wsLink = new GraphQLWsLink(createClient({
-  url: process.env.REACT_APP_LOCAL_WS_URL ? process.env.REACT_APP_LOCAL_WS_URL : "",
-  // connectionParams: { TODO !!!!!
-  //   authToken: userEvent.Token
-  // }
-}))
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: process.env.REACT_APP_LOCAL_WS_URL
+      ? process.env.REACT_APP_LOCAL_WS_URL
+      : "",
+    // connectionParams: { TODO !!!!!
+    //   authToken: userEvent.Token
+    // }
+  })
+);
 
 const splitLink = split(
   ({ query }) => {
-      const definition = getMainDefinition(query);
-      console.log(definition);
-      return (
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription'
-      )
+    const definition = getMainDefinition(query);
+    console.log(definition);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
   },
   wsLink,
-  httpLink,
+  httpLink
 );
 
 const client = new ApolloClient({
