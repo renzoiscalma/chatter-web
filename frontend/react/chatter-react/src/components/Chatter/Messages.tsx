@@ -95,13 +95,15 @@ function Messages({ messages }: MessageProps): JSX.Element {
     },
   };
 
+  const nameStyle: SxProps = {
+    position: "relative",
+    fontSize: "10px",
+    display: "block",
+    marginTop: "8px",
+  };
+
   const divRef = useRef<HTMLDivElement>(null);
   const userContext = useContext(UserContext);
-
-  useEffect(() => {
-    divRef.current?.scrollIntoView({ behavior: "auto" });
-    console.log(userContext);
-  }, [messages]);
 
   const getMessageBubbleStyle = (
     message: Message,
@@ -141,19 +143,34 @@ function Messages({ messages }: MessageProps): JSX.Element {
     }
   };
 
+  const getNameStyle = (message: Message): SxProps => {
+    return {
+      ...nameStyle,
+      alignSelf:
+        message.sender !== userContext.userId ? "flex-start" : "flex-end",
+      marginLeft: message.sender !== userContext.userId ? "26px" : "",
+      marginRight: message.sender === userContext.userId ? "26px" : "",
+    };
+  };
+
   return (
     <Box sx={messagesContainer}>
       {messages ? (
         messages.map((value: Message, index: number, messages: Message[]) => (
-          <Paper
-            sx={getMessageBubbleStyle(value, index, messages)}
-            key={value.date + "-" + index}
-          >
-            {value.message} {generateMessageStatus(value)}
-          </Paper>
+          <>
+            <Box sx={getNameStyle(value)}>{value.senderUsername}</Box>
+            <Paper
+              sx={getMessageBubbleStyle(value, index, messages)}
+              key={value.date + "-" + index}
+            >
+              {value.message} {generateMessageStatus(value)}
+            </Paper>
+          </>
         ))
       ) : (
-        <></>
+        <>
+          <i>crickets</i>
+        </>
       )}
       <div ref={divRef} />
     </Box>
