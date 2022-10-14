@@ -1,17 +1,18 @@
 import { Box, Paper, SxProps } from "@mui/material";
 import Message from "./interface/Message";
-import { useContext, useEffect, useRef } from "react";
+import { useContext } from "react";
 import SendStatus from "./interface/SendStatus";
 import CheckIcon from "@mui/icons-material/Check";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PriorityHigh from "@mui/icons-material/PriorityHigh";
-import { UserContext } from "../Layout/Layout";
+import { UsrContxt } from "../../App";
 
 interface MessageProps {
   messages: Message[];
+  children?: React.ReactNode;
 }
 
-function Messages({ messages }: MessageProps): JSX.Element {
+function Messages({ messages, children }: MessageProps): JSX.Element {
   const messagesContainer: SxProps = {
     display: "flex",
     flexDirection: "column",
@@ -102,8 +103,7 @@ function Messages({ messages }: MessageProps): JSX.Element {
     marginTop: "8px",
   };
 
-  const divRef = useRef<HTMLDivElement>(null);
-  const userContext = useContext(UserContext);
+  const userContext = useContext(UsrContxt);
 
   const getMessageBubbleStyle = (
     message: Message,
@@ -172,7 +172,7 @@ function Messages({ messages }: MessageProps): JSX.Element {
           <i>crickets</i>
         </>
       )}
-      <div ref={divRef} />
+      {children}
     </Box>
   );
 }
