@@ -1,4 +1,4 @@
-import { useContext, useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { Divider, SxProps } from "@mui/material";
 import Messages from "./Messages";
@@ -16,7 +16,7 @@ import {
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
 } from "../Queries/Chatter";
-import { UserContext } from "../Layout/Layout";
+import { UsrContxt } from "../../App";
 
 type MESSAGEACTIONTYPE =
   | { type: "FETCH_ALL"; payload: any } // todo change proper types
@@ -33,7 +33,6 @@ function sendMessageReducer(
   action: MESSAGEACTIONTYPE
 ): Message[] {
   let messages = state;
-  console.log(action.payload);
   switch (action.type) {
     case "FETCH_ALL":
       return action.payload.map((message: any): Message => {
@@ -82,8 +81,8 @@ function sendMessageReducer(
 }
 
 function Chatter() {
-  const userContext = useContext(UserContext);
-
+  const userContext = useContext(UsrContxt);
+  const bottomDivRef = useRef<HTMLDivElement>(null);
   // TODO QUERY RESULT ADD PROPER TYPES
   const existingMessages: QueryResult<any, any> = useQuery(
     GET_MESSAGES_ON_LOBBY,
@@ -136,6 +135,10 @@ function Chatter() {
   };
 
   useEffect(() => {
+    bottomDivRef?.current?.scrollIntoView();
+  }, [messages]);
+
+  useEffect(() => {
     if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
       setInitialized(true);
       dispatchMessage({
@@ -170,7 +173,9 @@ function Chatter() {
 
   return (
     <Box sx={chatterContainer}>
-      <Messages messages={messages}></Messages>
+      <Messages messages={messages}>
+        <div ref={bottomDivRef} />
+      </Messages>
       <Divider></Divider>
       <Sender handleSendMessage={handleSendMessage}></Sender>
     </Box>

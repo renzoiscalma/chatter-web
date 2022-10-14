@@ -3,7 +3,7 @@ import React, { KeyboardEvent, useContext } from "react";
 import { Send } from "@mui/icons-material";
 import SendStatus from "./interface/SendStatus";
 import Message from "./interface/Message";
-import { UserContext } from "../Layout/Layout";
+import { UsrContxt } from "../../App";
 
 interface SenderProps {
   handleSendMessage(message: string): void;
@@ -21,7 +21,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
     message: string;
   }
 
-  const userContext = useContext(UserContext);
+  const userContext = useContext(UsrContxt);
   const [values, setValues] = React.useState<State>({
     message: "",
   });
