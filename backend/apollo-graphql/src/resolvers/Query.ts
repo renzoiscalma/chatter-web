@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
 import { GetMessageOnLobbyResponse } from "../models/GetMessagesOnLobbyResponse";
 
@@ -28,6 +29,29 @@ export const queryResolver = {
             code: 404,
             success: false,
             data: [],
+          };
+    },
+    isLobbyExisting: async (
+      // todo appy proper types
+      _: any,
+      args: any,
+      ___: any,
+      ____: any
+    ): Promise<any> => {
+      const res = await LobbyCollection.findById(
+        new Types.ObjectId(args.lobbyId)
+      );
+      console.log(res);
+      return res // error handling in the future TODO
+        ? {
+            code: 200,
+            success: true,
+            isExisting: true,
+          }
+        : {
+            code: 200,
+            success: false,
+            isExisting: false,
           };
     },
   },

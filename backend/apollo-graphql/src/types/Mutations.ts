@@ -10,7 +10,7 @@ const Mutations = gql`
       localDateSent: String
     ): AddMessageResponse
     addNewUser: AddNewUserResponse
-    addNewLobby: Lobby
+    createLobby: Lobby
     addUserToLobby(lobbyId: ID, userId: ID): GenericResponse
     removeUserToLobby(lobbyId: ID, userId: ID): GenericResponse
   }

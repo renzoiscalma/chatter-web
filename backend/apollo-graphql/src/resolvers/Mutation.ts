@@ -5,7 +5,7 @@ import UserCollection from "../db/interface/UserSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
 import { pubsub } from "../redis";
 import { MESSAGE_ADDED_TOPIC } from "../utils/const";
-import { generateNewUser } from "../utils/generateNewUser";
+import { generateNewUser } from "../utils/NameGenerators";
 
 interface addMessageArgs {
   from: string;
@@ -24,6 +24,7 @@ const mutationResolver = {
       console.log(from, to, message, localDateSent);
       // date is created here, once it has arrived in backend, probably add middlewares
       // TODO check if lobby and user is existing...
+      // TODO use await only or use .then() only https://stackoverflow.com/questions/50905750/error-handling-in-async-await
       const newMessage = new MessageCollection({
         message: message,
         to: new Types.ObjectId(to),
@@ -31,24 +32,19 @@ const mutationResolver = {
         date: new Date(),
       });
 
-      await newMessage
-        .save()
-        .then(async (newMessage) => {
-          await newMessage.populate([
-            "from",
-            {
-              path: "to",
-              populate: {
-                path: "currentUsers",
-              },
-            },
-          ]);
-        })
-        .catch((err) => {
-          // todo have a proper middleware for catching errrors
-          console.error(err);
-          return undefined;
-        });
+      await newMessage.save().catch((err) => {
+        // todo have a proper middleware for catching errrors
+        console.error(err);
+        return undefined;
+      });
+
+      await newMessage.populate([
+        "from",
+        {
+          path: "to",
+          populate: { path: "currentUsers" },
+        },
+      ]);
 
       await pubsub.publish(MESSAGE_ADDED_TOPIC, {
         messageAdded: {
@@ -81,16 +77,10 @@ const mutationResolver = {
         username: generatedUsername,
         type: 2,
       });
-
-      newUser
-        .save()
-        .then(async (newUser) => {
-          console.log(newUser);
-        })
-        .catch((err) => {
-          console.log(err);
-          return null;
-        });
+      await newUser.save().catch((err) => {
+        console.log(err);
+        return null;
+      });
 
       return {
         code: newUser ? 200 : 500,
@@ -127,6 +117,13 @@ const mutationResolver = {
         code: res ? 200 : 500,
         success: res ? true : false,
       };
+    },
+    createLobby: async (_: any, args: any, ___: any, ____: any) => {
+      const newLobby = new LobbyCollection({
+        currentUsers: [],
+        video: "",
+      });
+      return await newLobby.save();
     },
   },
 };
