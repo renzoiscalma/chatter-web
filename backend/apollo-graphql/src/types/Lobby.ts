@@ -5,6 +5,7 @@ const Lobby = gql`
     id: ID!
     currentUsers: [User]
     video: String
+    videoStatus: VideoStatus
   }
 `;
 

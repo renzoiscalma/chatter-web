@@ -2,12 +2,14 @@ import { Types } from "mongoose";
 import { Message } from "../models/Message";
 import { User } from "../models/User";
 
-export const initialUsers: User[] = [
+export const initialUsers: (User & { _id: string })[] = [
   {
+    _id: "633c71d566f605851babba39",
     username: "Foo Bar",
     type: 1,
   },
   {
+    _id: "633c71d566f605851babba3a",
     username: "Bar 2k",
     type: 1,
   },

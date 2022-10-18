@@ -14,6 +14,8 @@ import AddMessageTopicResponse from "./types/responses/AddMessageTopicResponse";
 import GenericResponse from "./types/responses/GenericResponse";
 import AddNewUserResponse from "./types/responses/AddNewUserResponse";
 import IsLobbyExistingResponse from "./types/responses/IsLobbyExistingResponse";
+import VideoStatus from "./types/VideoStatus";
+import VideoStatusTopicResponse from "./types/responses/VideoStatusTopicResponse";
 
 export default makeExecutableSchema({
   typeDefs: [
@@ -23,11 +25,13 @@ export default makeExecutableSchema({
     User,
     Message,
     Lobby,
+    VideoStatus,
     AddNewUserResponse,
     AddMessageResponse,
     GetMessagesOnLobbyResponse,
     AddMessageTopicResponse,
     IsLobbyExistingResponse,
+    VideoStatusTopicResponse,
     GenericResponse,
   ],
   resolvers: [subResolver, mutationResolver, queryResolver],
