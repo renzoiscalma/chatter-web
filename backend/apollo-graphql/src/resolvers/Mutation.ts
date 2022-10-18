@@ -17,6 +17,7 @@ interface addMessageArgs {
 const mutationResolver = {
   Mutation: {
     // todo apply types when done https://stackoverflow.com/a/67886925/20052351
+    // apply errors https://stackoverflow.com/questions/63402084/how-can-i-get-specific-error-messages-from-a-mongoose-schema
     addMessage: async (
       _: any,
       { from, to, message, localDateSent }: addMessageArgs

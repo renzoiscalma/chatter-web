@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import UserCollection from "./interface/UserSchema";
 import LobbyCollection from "./interface/LobbySchema";
 import MessageCollection from "./interface/MessageSchema";
+import VideoCollection from "./interface/VideoSchema";
 import { generateInitialMessage, initialUsers } from "./initialData";
 
 dotenv.config();
@@ -30,14 +31,21 @@ async function run() {
   await UserCollection.insertMany(initialUsers);
   const userOne = await UserCollection.findOne({ username: "Foo Bar" }); // todo proper types
   const userTwo = await UserCollection.findOne({ username: "Bar 2k" });
+  const videoStatus: Document = await VideoCollection.create({
+    currTime: "0",
+    status: 0,
+  });
   const lobby: Document = await LobbyCollection.create({
+    _id: "633c71d566f605851babba3e",
     currentUsers: [userOne?._id, userTwo?._id],
     video: "rokGy0huYEA",
-  }); // should query for users so you have a reference for it bc ull need user reference
+    videoStatus: videoStatus?._id,
+  });
   if (userOne?._id && userTwo?._id)
     await MessageCollection.insertMany(
       generateInitialMessage(lobby._id, userOne._id, userTwo._id)
     );
+
   await connection.destroy();
 }
 
