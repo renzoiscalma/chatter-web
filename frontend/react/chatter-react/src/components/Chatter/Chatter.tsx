@@ -15,7 +15,7 @@ import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
-} from "../Queries/Chatter";
+} from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
 
 type MESSAGEACTIONTYPE =
