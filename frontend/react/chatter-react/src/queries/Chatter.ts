@@ -20,6 +20,15 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
+export const UPDATE_VIDEO = gql`
+  mutation updateVideoStatus($statusInput: VideoStatusInput) {
+    updateVideoStatus(statusInput: $statusInput) {
+      code
+      success
+    }
+  }
+`;
+
 export const GET_MESSAGES_ON_LOBBY = gql`
   query getMessagesOnLobby($lobbyId: ID!) {
     getMessagesOnLobby(lobbyId: $lobbyId) {

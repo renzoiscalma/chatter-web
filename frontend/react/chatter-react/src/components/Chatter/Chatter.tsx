@@ -6,6 +6,7 @@ import Sender from "./Sender";
 import Message from "./interface/Message";
 import SendStatus from "./interface/SendStatus";
 import {
+  MutationTuple,
   QueryResult,
   SubscriptionResult,
   useMutation,
@@ -16,10 +17,13 @@ import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
+  UPDATE_VIDEO,
   VIDEO_STATUS_SUBSCRIPTION,
 } from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
 import VideoStatusResponse from "./interface/response/VideoStatusTopicResponse";
+import GenericResponse from "./interface/response/GenericResponse";
+import UpdateVideoStatusRequest from "./interface/requests/UpdateVideoStatusRequest";
 
 interface LobbyIdProps {
   lobbyId: string;
@@ -99,15 +103,16 @@ function Chatter() {
   // TODO QUERY RESULT ADD PROPER TYPES
   const existingMessages: QueryResult<any, any> = useQuery(
     GET_MESSAGES_ON_LOBBY,
-    {
-      variables: {
-        lobbyId: userContext.lobbyId,
-      },
-    }
+    { variables: { lobbyId: userContext.lobbyId } }
   );
 
   // unless yung state ng message is contained to itself
   const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
+
+  const [updateVideo, updateVideoProperties]: MutationTuple<
+    { updateVideoStatus: GenericResponse },
+    { variables: { updateVideoStatus: UpdateVideoStatusRequest } }
+  > = useMutation(UPDATE_VIDEO);
 
   const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
     variables: {
