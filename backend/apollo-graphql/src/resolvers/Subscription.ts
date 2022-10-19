@@ -27,7 +27,7 @@ const subResolver = {
         (payload: any, variables: any) => {
           return (
             payload.messageAdded.lobbyId === variables.lobbyId &&
-            variables.userId !== payload.messageAdded.messages[0].from.id
+            variables.userId !== payload.userId
           );
         }
       ),
