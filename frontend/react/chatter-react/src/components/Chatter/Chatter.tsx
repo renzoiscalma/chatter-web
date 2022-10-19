@@ -7,6 +7,7 @@ import Message from "./interface/Message";
 import SendStatus from "./interface/SendStatus";
 import {
   QueryResult,
+  SubscriptionResult,
   useMutation,
   useQuery,
   useSubscription,
@@ -15,8 +16,18 @@ import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
+  VIDEO_STATUS_SUBSCRIPTION,
 } from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
+import VideoStatusResponse from "./interface/response/VideoStatusTopicResponse";
+
+interface LobbyIdProps {
+  lobbyId: string;
+}
+
+interface UserIdProps {
+  userIdProps: string;
+}
 
 type MESSAGEACTIONTYPE =
   | { type: "FETCH_ALL"; payload: any } // todo change proper types
@@ -52,10 +63,12 @@ function sendMessageReducer(
       messages.push(action.payload);
       action.payload.callback({
         variables: {
-          to,
-          from: sender,
-          message,
-          localDateSent,
+          addMessageInput: {
+            to,
+            from: sender,
+            message,
+            localDateSent,
+          },
         },
       });
       return [...messages];
@@ -103,6 +116,16 @@ function Chatter() {
     },
   });
 
+  const videoChanges: SubscriptionResult<
+    { videoStatusChanged: VideoStatusResponse },
+    { lobbyId: LobbyIdProps; userId: UserIdProps }
+  > = useSubscription(VIDEO_STATUS_SUBSCRIPTION, {
+    variables: {
+      lobbyId: userContext.lobbyId,
+      userId: userContext.userId,
+    },
+  });
+
   const chatterContainer: SxProps = {
     height: "100%",
     display: "flex",
@@ -137,6 +160,12 @@ function Chatter() {
   useEffect(() => {
     bottomDivRef?.current?.scrollIntoView();
   }, [messages]);
+
+  useEffect(() => {
+    if (videoChanges?.data?.videoStatusChanged) {
+      console.log(videoChanges);
+    }
+  }, [videoChanges.data]);
 
   useEffect(() => {
     if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {

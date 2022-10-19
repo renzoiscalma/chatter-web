@@ -1,13 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const SEND_MESSAGE = gql`
-  mutation ($to: ID, $from: ID, $message: String, $localDateSent: String) {
-    addMessage(
-      to: $to
-      from: $from
-      message: $message
-      localDateSent: $localDateSent
-    ) {
+  mutation ($addMessageInput: AddMessageInput) {
+    addMessage(addMessageInput: $addMessageInput) {
       code
       success
       localDateSent
@@ -55,6 +50,19 @@ export const MESSAGE_ADDED_SUBSCRIPTION = gql`
         }
         message
         date
+      }
+    }
+  }
+`;
+
+export const VIDEO_STATUS_SUBSCRIPTION = gql`
+  subscription VideoStatusChanged($lobbyId: ID!, $userId: ID!) {
+    videoStatusChanged(lobbyId: $lobbyId, userId: $userId) {
+      code
+      success
+      data {
+        status
+        currTime
       }
     }
   }
