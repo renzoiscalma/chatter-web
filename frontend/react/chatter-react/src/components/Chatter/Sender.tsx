@@ -27,7 +27,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
   });
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && values.message !== "") {
       handleSendMessage(values.message);
       setValues({ message: "" });
     }
@@ -41,6 +41,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
   const sendButton = (
     <InputAdornment position="end">
       <IconButton
+        disabled={values.message === ""}
         aria-label="send message"
         onClick={() => {
           handleSendMessage(values.message);
