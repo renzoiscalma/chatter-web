@@ -19,6 +19,7 @@ import {
   SEND_MESSAGE,
 } from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
+import MessageBar from "./MessageBar";
 
 interface LobbyIdProps {
   lobbyId: string;
@@ -189,6 +190,7 @@ function Chatter() {
 
   return (
     <Box sx={chatterContainer}>
+      <MessageBar></MessageBar>
       <Messages messages={messages}>
         <div ref={bottomDivRef} />
       </Messages>

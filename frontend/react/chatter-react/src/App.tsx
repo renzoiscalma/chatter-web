@@ -9,7 +9,7 @@ import { useCookies } from "react-cookie";
 import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
 import { ADD_NEW_USER, CREATE_LOBBY, IS_LOBBY_EXISTING } from "./queries/App";
-import LobbyModal from "./components/Lobby/LobbyModal";
+import LobbyModal from "./components/Modals/LobbyModal";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
 import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
 import Lobby from "./components/Chatter/interface/Lobby";
