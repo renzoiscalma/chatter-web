@@ -1,4 +1,5 @@
 interface VideoStatus {
   status: number;
-  currTime: string;
+  currTime: number;
+  url: String;
 }

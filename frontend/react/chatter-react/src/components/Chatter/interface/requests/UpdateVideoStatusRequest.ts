@@ -1,8 +1,8 @@
 interface UpdateVideoStatusRequest {
   lobbyId: string;
   userId: string;
-  videoStatus: number;
-  currTime: string;
+  status: number;
+  currTime: number;
 }
 
 export default UpdateVideoStatusRequest;

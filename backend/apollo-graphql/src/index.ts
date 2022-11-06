@@ -8,6 +8,7 @@ import UserCollection from "./db/interface/UserSchema";
 import startApolloServer from "./apollo";
 
 import startRedisServer from "./redis";
+import VideoCollection from "./db/interface/VideoSchema";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ connectMongoose().then(() => {
   const userCollection = UserCollection;
   const messageCollection = MessageCollection;
   const lobbyCollection = LobbyCollection;
+  const videoCollection = VideoCollection;
 });
 
 startApolloServer();

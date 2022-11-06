@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
+import VideoCollection from "../db/interface/VideoSchema";
 import { GetMessageOnLobbyResponse } from "../models/GetMessagesOnLobbyResponse";
 
 interface getMessagesOnLobbyArgs {
@@ -53,6 +54,15 @@ export const queryResolver = {
             success: false,
             isExisting: false,
           };
+    },
+    getVideoStatusOnLobby: async (_: any, { lobbyId }: any) => {
+      const res = await LobbyCollection.findById(lobbyId);
+      await res?.populate("videoStatus");
+      return {
+        code: res ? 200 : 500,
+        success: !!res,
+        data: res?.videoStatus,
+      };
     },
   },
 };

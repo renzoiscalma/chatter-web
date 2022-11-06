@@ -20,15 +20,6 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
-export const UPDATE_VIDEO = gql`
-  mutation updateVideoStatus($statusInput: VideoStatusInput) {
-    updateVideoStatus(statusInput: $statusInput) {
-      code
-      success
-    }
-  }
-`;
-
 export const GET_MESSAGES_ON_LOBBY = gql`
   query getMessagesOnLobby($lobbyId: ID!) {
     getMessagesOnLobby(lobbyId: $lobbyId) {
@@ -59,19 +50,6 @@ export const MESSAGE_ADDED_SUBSCRIPTION = gql`
         }
         message
         date
-      }
-    }
-  }
-`;
-
-export const VIDEO_STATUS_SUBSCRIPTION = gql`
-  subscription VideoStatusChanged($lobbyId: ID!, $userId: ID!) {
-    videoStatusChanged(lobbyId: $lobbyId, userId: $userId) {
-      code
-      success
-      data {
-        status
-        currTime
       }
     }
   }

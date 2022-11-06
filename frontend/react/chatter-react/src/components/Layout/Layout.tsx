@@ -7,7 +7,7 @@ function Layout(): JSX.Element {
   return (
     <Box sx={gridContainer}>
       <Box sx={videoContainer}>
-        <Video videoId="rokGy0huYEA"></Video>
+        <Video></Video>
       </Box>
       <Box sx={chatContainer}>
         <Chatter></Chatter>

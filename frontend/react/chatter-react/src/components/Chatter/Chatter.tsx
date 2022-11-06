@@ -17,13 +17,8 @@ import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
-  UPDATE_VIDEO,
-  VIDEO_STATUS_SUBSCRIPTION,
 } from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
-import VideoStatusResponse from "./interface/response/VideoStatusTopicResponse";
-import GenericResponse from "./interface/response/GenericResponse";
-import UpdateVideoStatusRequest from "./interface/requests/UpdateVideoStatusRequest";
 
 interface LobbyIdProps {
   lobbyId: string;
@@ -109,22 +104,7 @@ function Chatter() {
   // unless yung state ng message is contained to itself
   const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
-  const [updateVideo, updateVideoProperties]: MutationTuple<
-    { updateVideoStatus: GenericResponse },
-    { variables: { updateVideoStatus: UpdateVideoStatusRequest } }
-  > = useMutation(UPDATE_VIDEO);
-
   const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
-    variables: {
-      lobbyId: userContext.lobbyId,
-      userId: userContext.userId,
-    },
-  });
-
-  const videoChanges: SubscriptionResult<
-    { videoStatusChanged: VideoStatusResponse },
-    { lobbyId: LobbyIdProps; userId: UserIdProps }
-  > = useSubscription(VIDEO_STATUS_SUBSCRIPTION, {
     variables: {
       lobbyId: userContext.lobbyId,
       userId: userContext.userId,
@@ -165,12 +145,6 @@ function Chatter() {
   useEffect(() => {
     bottomDivRef?.current?.scrollIntoView();
   }, [messages]);
-
-  useEffect(() => {
-    if (videoChanges?.data?.videoStatusChanged) {
-      console.log(videoChanges);
-    }
-  }, [videoChanges.data]);
 
   useEffect(() => {
     if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
