@@ -4,8 +4,9 @@ const VideoStatusInput = gql`
   input VideoStatusInput {
     lobbyId: ID!
     userId: ID!
-    videoStatus: Int
-    currTime: String
+    status: Int
+    currTime: Int
+    url: String
   }
 `;
 

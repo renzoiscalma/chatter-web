@@ -3,7 +3,8 @@ import { gql } from "apollo-server-core";
 const VideoStatus = gql`
   type VideoStatus {
     status: Int!
-    currTime: String
+    currTime: Int
+    url: String
   }
 `;
 

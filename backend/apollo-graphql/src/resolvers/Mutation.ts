@@ -2,6 +2,7 @@ import { Document, Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
 import UserCollection from "../db/interface/UserSchema";
+import VideoCollection from "../db/interface/VideoSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
 import { pubsub } from "../redis";
 import { MESSAGE_ADDED_TOPIC, VIDEO_STATUS_TOPIC } from "../utils/const";
@@ -17,8 +18,9 @@ interface addMessageArgs {
 interface updateVidStatus {
   lobbyId: string;
   userId: string;
-  videoStatus: number;
-  currTime: string;
+  status: number;
+  currTime: number;
+  url: string;
 }
 
 const mutationResolver = {
@@ -136,21 +138,44 @@ const mutationResolver = {
     },
     updateVideoStatus: async (
       _: any,
-      args: { statusInput: updateVidStatus },
+      { statusInput }: { statusInput: updateVidStatus },
       ___: any,
       ____: any
     ) => {
+      const { currTime, lobbyId, status, url } = statusInput;
+      console.log(!!url && { url });
+      const lobby = await LobbyCollection.findById(lobbyId);
+      if (!lobby) return null;
+      const videoStatusfilter = { _id: lobby.videoStatus };
+      const videoStatusUpdate = {
+        $set: {
+          currTime,
+          status,
+          ...(!!url && { url }), // conditional prop
+        },
+      };
+      const videoStatus = await VideoCollection.findOneAndUpdate(
+        videoStatusfilter,
+        videoStatusUpdate,
+        {
+          new: true,
+        }
+      );
+
+      console.log(videoStatus);
       await pubsub.publish(VIDEO_STATUS_TOPIC, {
-        code: args ? 200 : 500, //todo to be changed
-        success: !!args,
-        data: {
-          ...args.statusInput,
+        videoStatusChanged: {
+          code: videoStatus ? 200 : 500, //todo to be changed
+          success: !!videoStatus,
+          data: {
+            ...statusInput,
+          },
         },
       });
 
       return {
-        code: args ? 200 : 500, //todo to be changed
-        success: !!args,
+        code: videoStatus ? 200 : 500, //todo to be changed
+        success: !!videoStatus,
       };
     },
   },
