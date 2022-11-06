@@ -1,6 +1,6 @@
 import { Box, Paper, SxProps } from "@mui/material";
 import Message from "./interface/Message";
-import { useContext } from "react";
+import React, { StrictMode, useContext } from "react";
 import SendStatus from "./interface/SendStatus";
 import CheckIcon from "@mui/icons-material/Check";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -154,26 +154,25 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
   };
 
   return (
-    <Box sx={messagesContainer}>
-      {messages ? (
-        messages.map((value: Message, index: number, messages: Message[]) => (
+    <StrictMode>
+      <Box sx={messagesContainer}>
+        {messages ? (
+          messages.map((value: Message, index: number, messages: Message[]) => (
+            <React.Fragment key={value.date?.getTime()}>
+              <Box sx={getNameStyle(value)}>{value.senderUsername}</Box>
+              <Paper sx={getMessageBubbleStyle(value, index, messages)}>
+                {value.message} {generateMessageStatus(value)}
+              </Paper>
+            </React.Fragment>
+          ))
+        ) : (
           <>
-            <Box sx={getNameStyle(value)}>{value.senderUsername}</Box>
-            <Paper
-              sx={getMessageBubbleStyle(value, index, messages)}
-              key={value.date + "-" + index}
-            >
-              {value.message} {generateMessageStatus(value)}
-            </Paper>
+            <i>crickets</i>
           </>
-        ))
-      ) : (
-        <>
-          <i>crickets</i>
-        </>
-      )}
-      {children}
-    </Box>
+        )}
+        {children}
+      </Box>
+    </StrictMode>
   );
 }
 
