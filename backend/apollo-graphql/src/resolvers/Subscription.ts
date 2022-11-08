@@ -25,6 +25,7 @@ const subResolver = {
           return pubsub.asyncIterator(VIDEO_STATUS_TOPIC);
         },
         (payload: any, variables: any) => {
+          if (Boolean(payload.videoStatusChanged.data.url)) return true;
           return (
             payload.videoStatusChanged.data.lobbyId === variables.lobbyId &&
             payload.videoStatusChanged.data.userId !== variables.userId
