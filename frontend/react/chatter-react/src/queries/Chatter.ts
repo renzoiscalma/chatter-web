@@ -68,3 +68,14 @@ export const VIDEO_STATUS_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const USERNAME_CHANGED_SUBSCRIPTION = gql`
+  subscription UsernameChanged($lobbyId: ID!, $userId: ID!) {
+    usernameChanged(lobbyId: $lobbyId, userId: $userId) {
+      data {
+        id
+        username
+      }
+    }
+  }
+`;

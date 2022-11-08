@@ -7,7 +7,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Settings from "@mui/icons-material/Settings";
 
-import { MouseEvent, useContext, useState } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import ChangeVideoModal from "../Modals/ChangeVideoModal";
 import NameChangeModal from "../Modals/NameChangeModal";
 import { MutationTuple, useMutation } from "@apollo/client";
@@ -15,6 +15,8 @@ import { UPDATE_VIDEO } from "../../queries/Video";
 import GenericResponse from "./interface/response/GenericResponse";
 import UpdateVideoStatusRequest from "./interface/requests/UpdateVideoStatusRequest";
 import { UsrContxt } from "../../App";
+import { CHANGE_USERNAME } from "../../queries/MessageBar";
+import ChangeUsernameRequest from "./interface/requests/ChangeUsernameRequest";
 
 function MessageBar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -27,6 +29,11 @@ function MessageBar(): JSX.Element {
     { updateVideoStatus: GenericResponse },
     { statusInput: UpdateVideoStatusRequest }
   > = useMutation(UPDATE_VIDEO);
+
+  const [changeUsernameMutation, changeUsernameMutationProps]: MutationTuple<
+    { changeUsername: GenericResponse },
+    ChangeUsernameRequest
+  > = useMutation(CHANGE_USERNAME);
 
   const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMenuEl(event.currentTarget);
@@ -46,25 +53,43 @@ function MessageBar(): JSX.Element {
     setChangeVideoModal(true);
   };
 
-  const handleChangeUsername = (): void => {
-    // implementation would be hard for updating, might need websockets
-    console.log("username changed!"); // placeholder for now, change in the future!
+  const handleChangeUsername = (newUsername: string): void => {
+    userContext.setUsername(newUsername);
+    changeUsernameMutation({
+      variables: {
+        userId: userContext.userId,
+        newUsername: newUsername,
+      },
+    });
   };
 
   const handleChangeVideo = (newUrl: string): void => {
-    console.log(newUrl);
     updateVideoUrl({
       variables: {
         statusInput: {
           url: newUrl,
           lobbyId: userContext.lobbyId,
-          userId: userContext.userId + "-",
+          userId: userContext.userId + "-", // needed to update self's video as well
           currTime: 0,
           status: -1,
         },
       },
     });
   };
+
+  useEffect(() => {
+    if (!updateVideoUrlProps.error) {
+      setChangeVideoModal(false);
+      handleClose();
+    } else console.log("something went wrong updating the video url");
+  }, [updateVideoUrlProps.data, updateVideoUrlProps.error]);
+
+  useEffect(() => {
+    if (!changeUsernameMutationProps.error) {
+      setChangeUsernameModal(false);
+      handleClose();
+    } else console.log("something went wrong with updating your username");
+  }, [changeUsernameMutationProps.data, updateVideoUrlProps.error]);
 
   return (
     <AppBar position="static">

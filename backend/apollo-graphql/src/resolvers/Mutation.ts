@@ -1,3 +1,4 @@
+import { argsToArgsConfig } from "graphql/type/definition";
 import { Document, Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
@@ -5,22 +6,32 @@ import UserCollection from "../db/interface/UserSchema";
 import VideoCollection from "../db/interface/VideoSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
 import { pubsub } from "../redis";
-import { MESSAGE_ADDED_TOPIC, VIDEO_STATUS_TOPIC } from "../utils/const";
+import {
+  MESSAGE_ADDED_TOPIC,
+  USERNAME_CHANGED_TOPIC,
+  VIDEO_STATUS_TOPIC,
+} from "../utils/const";
 import { generateNewUser } from "../utils/NameGenerators";
 
-interface addMessageArgs {
+interface AddMessageArgs {
   from: string;
   to: string;
   message: string;
   localDateSent: string;
 }
 
-interface updateVidStatus {
+interface UpdateVidStatus {
   lobbyId: string;
   userId: string;
   status: number;
   currTime: number;
   url: string;
+}
+
+interface ChangeUsernameArgs {
+  lobbyId: string;
+  userId: string;
+  newUsername: string;
 }
 
 const mutationResolver = {
@@ -29,7 +40,7 @@ const mutationResolver = {
     // apply errors https://stackoverflow.com/questions/63402084/how-can-i-get-specific-error-messages-from-a-mongoose-schema
     addMessage: async (
       _: any,
-      args: { addMessageInput: addMessageArgs }
+      args: { addMessageInput: AddMessageArgs }
     ): Promise<AddMessageResponse> => {
       const { from, to, message, localDateSent } = args.addMessageInput;
       console.log(args);
@@ -99,6 +110,30 @@ const mutationResolver = {
         user: newUser,
       };
     },
+    changeUsername: async (_: undefined, args: ChangeUsernameArgs) => {
+      const filter = { _id: args.userId };
+      const update = { $set: { username: args.newUsername } };
+      await UserCollection.findOneAndUpdate(filter, update, {
+        new: true,
+      });
+
+      await pubsub.publish(USERNAME_CHANGED_TOPIC, {
+        usernameChanged: {
+          code: 200,
+          success: true,
+          data: {
+            id: args.userId,
+            username: args.newUsername,
+          },
+          lobbies: ["633c71d566f605851babba3e"], // TODO SCRAPE LOBBIES
+        },
+      });
+
+      return {
+        code: 200,
+        success: true,
+      };
+    },
     addUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
       const filter = { _id: args.lobbyId };
       const update = { $push: { currentUsers: args.userId } };
@@ -138,12 +173,11 @@ const mutationResolver = {
     },
     updateVideoStatus: async (
       _: any,
-      { statusInput }: { statusInput: updateVidStatus },
+      { statusInput }: { statusInput: UpdateVidStatus },
       ___: any,
       ____: any
     ) => {
       const { currTime, lobbyId, status, url } = statusInput;
-      console.log(!!url && { url });
       const lobby = await LobbyCollection.findById(lobbyId);
       if (!lobby) return null;
       const videoStatusfilter = { _id: lobby.videoStatus };
