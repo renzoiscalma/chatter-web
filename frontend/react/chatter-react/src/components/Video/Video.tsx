@@ -156,9 +156,16 @@ function Video(): JSX.Element {
   };
 
   useEffect(() => {
+    console.log(videoChanges);
     if (videoChanges?.data?.videoStatusChanged) {
-      const { currTime, status } = videoChanges.data.videoStatusChanged.data;
-      console.log("received " + status + " ", status);
+      const { currTime, status, url } =
+        videoChanges.data.videoStatusChanged.data;
+      if (url) {
+        setPlayerProps((values) => ({
+          ...values,
+          url,
+        }));
+      }
       switch (getPlayerState(status)) {
         case PlayerState.PLAYING:
           setPlayerProps((values) => ({

@@ -8,6 +8,7 @@ export const VIDEO_STATUS_SUBSCRIPTION = gql`
       data {
         status
         currTime
+        url
       }
     }
   }

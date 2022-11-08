@@ -3,11 +3,16 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import React, { KeyboardEvent, useState } from "react";
 
 interface ChangeVideoModalProps {
   opened: boolean;
   handleCloseModal(): void;
-  handleChangeVideo(): void;
+  handleChangeVideo(newUrl: string): void;
+}
+
+interface State {
+  newUrl: string;
 }
 
 const style = {
@@ -27,14 +32,41 @@ function ChangeVideoModal({
   handleCloseModal,
   handleChangeVideo,
 }: ChangeVideoModalProps): JSX.Element {
+  const [values, setValues] = useState<State>({
+    newUrl: "",
+  });
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === "Enter" && values.newUrl !== "") {
+      handleChangeVideo(values.newUrl);
+    }
+  };
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValues({ [prop]: event.target.value });
+    };
+
   return (
     <Modal open={opened} onClose={handleCloseModal}>
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Enter New Video Url
         </Typography>
-        <TextField id="outlined-basic" label="Outlined" variant="outlined" />
-        <Button onClick={handleChangeVideo}>SUBMIT</Button>
+        <TextField
+          id="outlined-basic"
+          label="Outlined"
+          variant="outlined"
+          onChange={handleChange("newUrl")}
+          onKeyDown={handleKeyDown}
+        />
+        <Button
+          onClick={() => {
+            handleChangeVideo(values.newUrl);
+          }}
+        >
+          SUBMIT
+        </Button>
       </Box>
     </Modal>
   );

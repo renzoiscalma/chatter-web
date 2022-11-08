@@ -7,15 +7,26 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Settings from "@mui/icons-material/Settings";
 
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useContext, useState } from "react";
 import ChangeVideoModal from "../Modals/ChangeVideoModal";
 import NameChangeModal from "../Modals/NameChangeModal";
+import { MutationTuple, useMutation } from "@apollo/client";
+import { UPDATE_VIDEO } from "../../queries/Video";
+import GenericResponse from "./interface/response/GenericResponse";
+import UpdateVideoStatusRequest from "./interface/requests/UpdateVideoStatusRequest";
+import { UsrContxt } from "../../App";
 
 function MessageBar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [changeUsernameModal, setChangeUsernameModal] =
     useState<boolean>(false);
   const [changeVideoModal, setChangeVideoModal] = useState<boolean>(false);
+  const userContext = useContext(UsrContxt);
+
+  const [updateVideoUrl, updateVideoUrlProps]: MutationTuple<
+    { updateVideoStatus: GenericResponse },
+    { statusInput: UpdateVideoStatusRequest }
+  > = useMutation(UPDATE_VIDEO);
 
   const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMenuEl(event.currentTarget);
@@ -40,9 +51,19 @@ function MessageBar(): JSX.Element {
     console.log("username changed!"); // placeholder for now, change in the future!
   };
 
-  const handleChangeVideo = (): void => {
-    // same here
-    console.log("video changed!"); // placeholder for now, change in the future!
+  const handleChangeVideo = (newUrl: string): void => {
+    console.log(newUrl);
+    updateVideoUrl({
+      variables: {
+        statusInput: {
+          url: newUrl,
+          lobbyId: userContext.lobbyId,
+          userId: userContext.userId + "-",
+          currTime: 0,
+          status: -1,
+        },
+      },
+    });
   };
 
   return (
