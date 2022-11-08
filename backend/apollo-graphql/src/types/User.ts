@@ -4,7 +4,7 @@ const User = gql`
   type User {
     id: ID!
     username: String!
-    type: Int!
+    type: Int
   }
 `;
 

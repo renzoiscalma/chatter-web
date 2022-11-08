@@ -18,6 +18,7 @@ import VideoStatus from "./types/VideoStatus";
 import VideoStatusTopicResponse from "./types/responses/VideoStatusTopicResponse";
 import VideoStatusInput from "./types/Input/VideoStatusInput";
 import AddMessageInput from "./types/Input/AddMessageInput";
+import UsernameChangedTopicResponse from "./types/responses/UsernameChangedTopicResponse";
 
 export default makeExecutableSchema({
   typeDefs: [
@@ -36,6 +37,7 @@ export default makeExecutableSchema({
     AddMessageTopicResponse,
     IsLobbyExistingResponse,
     VideoStatusTopicResponse,
+    UsernameChangedTopicResponse,
     GenericResponse,
   ],
   resolvers: [subResolver, mutationResolver, queryResolver],

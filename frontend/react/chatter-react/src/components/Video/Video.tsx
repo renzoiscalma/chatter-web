@@ -166,6 +166,7 @@ function Video(): JSX.Element {
           url,
         }));
       }
+
       switch (getPlayerState(status)) {
         case PlayerState.PLAYING:
           setPlayerProps((values) => ({

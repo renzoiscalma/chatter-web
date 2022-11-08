@@ -17,17 +17,12 @@ import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
+  USERNAME_CHANGED_SUBSCRIPTION,
 } from "../../queries/Chatter";
 import { UsrContxt } from "../../App";
 import MessageBar from "./MessageBar";
-
-interface LobbyIdProps {
-  lobbyId: string;
-}
-
-interface UserIdProps {
-  userIdProps: string;
-}
+import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
+import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
 
 interface LobbyIdProps {
   lobbyId: string;
@@ -45,7 +40,11 @@ type MESSAGEACTIONTYPE =
       payload: Message & { index: number; callback: Function };
     }
   | { type: SendStatus.SENT; payload: Message & { localDateSent: string } }
-  | { type: "NEW_MESSAGE"; payload: Message[] };
+  | { type: "NEW_MESSAGE"; payload: Message[] }
+  | {
+      type: "USERNAME_CHANGED";
+      payload: { username: string; id: string };
+    };
 
 function sendMessageReducer(
   state: Message[],
@@ -54,6 +53,7 @@ function sendMessageReducer(
   let messages = state;
   switch (action.type) {
     case "FETCH_ALL":
+      console.log(action.payload);
       return action.payload.map((message: any): Message => {
         return {
           date: new Date(+message.date),
@@ -96,6 +96,16 @@ function sendMessageReducer(
       // todo sort
       return [...messages, ...action.payload];
     }
+    case "USERNAME_CHANGED": {
+      return messages.map((message: Message) => {
+        if (message.sender === action.payload.id)
+          return {
+            ...message,
+            senderUsername: action.payload.username,
+          };
+        return message;
+      });
+    }
     default:
       throw new Error();
   }
@@ -113,7 +123,22 @@ function Chatter() {
   // unless yung state ng message is contained to itself
   const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
-  const newMessage = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+  const newMessageSub: SubscriptionResult<
+    { messageAdded: NewMessageSubResponse },
+    { lobbyId: LobbyIdProps; userId: UserIdProps }
+  > = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+    variables: {
+      lobbyId: userContext.lobbyId,
+      userId: userContext.userId,
+    },
+  });
+
+  const usernameChangedSub: SubscriptionResult<
+    {
+      usernameChanged: { data: UsernameChangedSubResponse };
+    },
+    { lobbyId: LobbyIdProps; userId: UserIdProps }
+  > = useSubscription(USERNAME_CHANGED_SUBSCRIPTION, {
     variables: {
       lobbyId: userContext.lobbyId,
       userId: userContext.userId,
@@ -181,12 +206,28 @@ function Chatter() {
 
   useEffect(() => {
     // todo add types
-    if (newMessage?.data?.messageAdded)
+    console.log(newMessageSub.data);
+    if (newMessageSub?.data?.messageAdded)
       dispatchMessage({
         type: "NEW_MESSAGE",
-        payload: newMessage.data.messageAdded.messages as Message[],
+        payload: newMessageSub.data.messageAdded.messages.map((value: any) => ({
+          ...value,
+          sender: value.from.id,
+          senderUsername: value.from.username,
+          date: new Date(String(value.date)),
+        })),
       });
-  }, [newMessage]);
+  }, [newMessageSub]);
+
+  useEffect(() => {
+    console.log(usernameChangedSub);
+    if (usernameChangedSub?.data?.usernameChanged) {
+      dispatchMessage({
+        type: "USERNAME_CHANGED",
+        payload: usernameChangedSub.data.usernameChanged.data,
+      });
+    }
+  }, [usernameChangedSub.data]);
 
   return (
     <Box sx={chatterContainer}>
