@@ -5,6 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Switch from "@mui/material/Switch";
 import Settings from "@mui/icons-material/Settings";
 
 import { MouseEvent, useContext, useEffect, useState } from "react";
@@ -95,7 +96,7 @@ function MessageBar(): JSX.Element {
     <AppBar position="static">
       <Container>
         <Toolbar disableGutters>
-          <Typography sx={{ flexGrow: 1 }}>Hello World</Typography>
+          <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
           <div>
             <IconButton size="large" onClick={handleMenuOpen} color="inherit">
               <Settings />
@@ -113,7 +114,14 @@ function MessageBar(): JSX.Element {
               open={Boolean(menuEl)}
               onClose={handleClose}
             >
-              <MenuItem> Dark Mode </MenuItem>
+              <MenuItem>
+                Dark Mode
+                <Switch
+                  inputProps={{ "aria-label": "Dark Mode Toggle" }}
+                  checked={userContext.darkMode}
+                  onClick={userContext.darkModeToggle}
+                ></Switch>
+              </MenuItem>
               <MenuItem onClick={openChangeUsernameModal}>
                 {" "}
                 Change Username{" "}

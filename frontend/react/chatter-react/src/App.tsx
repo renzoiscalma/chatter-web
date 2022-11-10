@@ -20,13 +20,16 @@ export const UsrContxt = createContext<UserContext>({
   username: "",
   userId: "",
   lobbyId: "",
+  darkMode: false,
   setUsername: () => {},
+  darkModeToggle: () => {},
 });
 
 function App(): JSX.Element {
   const [username, setUsername] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [lobbyId, setLobbyId] = useState<string>("");
+  const [darkMode, setDarkMode] = useState<boolean>(false);
   const [userCookie, setUserCookie] = useCookies(["user-cookie"]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [lobbyModal, setLobbyModal] = useState<boolean>(false);
@@ -60,6 +63,11 @@ function App(): JSX.Element {
 
   const handleCloseModal = () => {
     setLobbyModal(false);
+  };
+
+  const handleDarkModeToggle = () => {
+    console.log("dark mode toggled!");
+    setDarkMode((val) => !val);
   };
 
   useEffect(() => {
@@ -129,7 +137,14 @@ function App(): JSX.Element {
 
   return (
     <UsrContxt.Provider
-      value={{ username, setUsername: handleSetUsername, userId, lobbyId }}
+      value={{
+        username,
+        setUsername: handleSetUsername,
+        userId,
+        lobbyId,
+        darkMode,
+        darkModeToggle: handleDarkModeToggle,
+      }}
     >
       <div className="App">
         <LobbyModal
