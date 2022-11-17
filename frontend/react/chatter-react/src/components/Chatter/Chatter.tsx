@@ -23,7 +23,7 @@ import { UsrContxt } from "../../App";
 import MessageBar from "./MessageBar";
 import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
 import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
-
+import { useTheme } from "@mui/material/styles";
 interface LobbyIdProps {
   lobbyId: string;
 }
@@ -114,6 +114,7 @@ function sendMessageReducer(
 function Chatter() {
   const userContext = useContext(UsrContxt);
   const bottomDivRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
   // TODO QUERY RESULT ADD PROPER TYPES
   const existingMessages: QueryResult<any, any> = useQuery(
     GET_MESSAGES_ON_LOBBY,
@@ -149,6 +150,7 @@ function Chatter() {
     height: "100%",
     display: "flex",
     flexDirection: "column",
+    bgcolor: theme.chat.bgColor,
   };
 
   let initialMessages: Message[] = [] as Message[];

@@ -6,6 +6,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PriorityHigh from "@mui/icons-material/PriorityHigh";
 import { UsrContxt } from "../../App";
+import { useTheme } from "@mui/material/styles";
 
 interface MessageProps {
   messages: Message[];
@@ -13,6 +14,8 @@ interface MessageProps {
 }
 
 function Messages({ messages, children }: MessageProps): JSX.Element {
+  const theme = useTheme();
+
   const messagesContainer: SxProps = {
     display: "flex",
     flexDirection: "column",
@@ -44,7 +47,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
   const tailSelfStyle: SxProps = {
     "&::after": {
       ...commonTailStyle,
-      backgroundColor: "#fff",
+      backgroundColor: theme.chat.bgColor,
       borderBottomLeftRadius: "0.5rem",
       right: "-40px",
       transform: "translate(-30px, -2px)",
@@ -53,7 +56,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
     "&::before": {
       ...commonTailStyle,
       borderBottomLeftRadius: "0.8rem 0.7rem",
-      borderRight: "1rem solid #248bf5",
+      borderRight: `1rem solid ${theme.chat.bubbleTo}`,
       right: "-0.35rem",
       transform: "translate(0, -0.1rem)",
     },
@@ -62,7 +65,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
   const tailOtherStyle: SxProps = {
     "&::after": {
       ...commonTailStyle,
-      backgroundColor: "#fff",
+      backgroundColor: theme.chat.bgColor,
       borderBottomRightRadius: "0.5rem",
       left: "20px",
       transform: "translate(-30px, -2px)",
@@ -71,7 +74,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
     "&::before": {
       ...commonTailStyle,
       borderBottomRightRadius: "0.8rem 0.7rem",
-      borderLeft: "1rem solid #e5e5ea",
+      borderLeft: `1rem solid ${theme.chat.bubbleFrom}`,
       left: "-0.35rem",
       transform: "translate(0, -0.1rem)",
     },
@@ -121,8 +124,13 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
       ...messageBubbleStyle,
       ...tailStyle,
       backgroundColor:
-        message.sender !== userContext.userId ? "#e5e5ea" : "#248bf5",
-      color: message.sender !== userContext.userId ? "#000" : "#fff",
+        message.sender !== userContext.userId
+          ? theme.chat.bubbleFrom
+          : theme.chat.bubbleTo,
+      color:
+        message.sender !== userContext.userId
+          ? theme.common.text.secondary
+          : theme.common.text.primary,
       alignSelf:
         message.sender !== userContext.userId ? "flex-start" : "flex-end",
       marginLeft: message.sender !== userContext.userId ? "16px" : "0px",
@@ -146,6 +154,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
   const getNameStyle = (message: Message): SxProps => {
     return {
       ...nameStyle,
+      color: theme.common.text.secondary,
       alignSelf:
         message.sender !== userContext.userId ? "flex-start" : "flex-end",
       marginLeft: message.sender !== userContext.userId ? "26px" : "",
