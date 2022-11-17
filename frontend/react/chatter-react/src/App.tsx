@@ -4,7 +4,7 @@ import {
   useLazyQuery,
   useMutation,
 } from "@apollo/client";
-import React, { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
@@ -15,6 +15,8 @@ import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsL
 import Lobby from "./components/Chatter/interface/Lobby";
 import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
 import { useSearchParams } from "react-router-dom";
+import { darkTheme, lightTheme } from "./theme";
+import { ThemeProvider } from "@mui/material/styles";
 
 export const UsrContxt = createContext<UserContext>({
   username: "",
@@ -146,14 +148,16 @@ function App(): JSX.Element {
         darkModeToggle: handleDarkModeToggle,
       }}
     >
-      <div className="App">
-        <LobbyModal
-          opened={lobbyModal}
-          createLobby={createLobby}
-          handleCloseModal={handleCloseModal}
-        />
-        <Layout />
-      </div>
+      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+        <div className="App">
+          <LobbyModal
+            opened={lobbyModal}
+            createLobby={createLobby}
+            handleCloseModal={handleCloseModal}
+          />
+          <Layout />
+        </div>
+      </ThemeProvider>
     </UsrContxt.Provider>
   );
 }
