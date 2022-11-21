@@ -23,6 +23,7 @@ import { useContainerDimension } from "../../util/ResizeUtil";
 import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
 import VideoStatusTopicResponse from "../Chatter/interface/response/VideoStatusTopicResponse";
+import { useTheme } from "@mui/material/styles";
 
 interface VideoProps {
   videoId: string;
@@ -61,6 +62,7 @@ function Video(): JSX.Element {
   const ytContainer = useRef<HTMLDivElement>(null);
   const videoSize = useContainerDimension(ytContainer);
   const playerRef = useRef<ReactPlayer>(null);
+  const theme = useTheme();
 
   const videoChanges: SubscriptionResult<
     { videoStatusChanged: VideoStatusTopicResponse },
@@ -88,6 +90,7 @@ function Video(): JSX.Element {
 
   const videoContainerStyle: SxProps = {
     display: "flex",
+    bgcolor: theme.common.base,
   };
 
   const onReadyHandler = (): void => {

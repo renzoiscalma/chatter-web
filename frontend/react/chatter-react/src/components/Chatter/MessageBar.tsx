@@ -18,6 +18,8 @@ import UpdateVideoStatusRequest from "./interface/requests/UpdateVideoStatusRequ
 import { UsrContxt } from "../../App";
 import { CHANGE_USERNAME } from "../../queries/MessageBar";
 import ChangeUsernameRequest from "./interface/requests/ChangeUsernameRequest";
+import { useTheme } from "@mui/material/styles";
+import { SxProps } from "@mui/system";
 
 function MessageBar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -25,6 +27,7 @@ function MessageBar(): JSX.Element {
     useState<boolean>(false);
   const [changeVideoModal, setChangeVideoModal] = useState<boolean>(false);
   const userContext = useContext(UsrContxt);
+  const theme = useTheme();
 
   const [updateVideoUrl, updateVideoUrlProps]: MutationTuple<
     { updateVideoStatus: GenericResponse },
@@ -78,6 +81,10 @@ function MessageBar(): JSX.Element {
     });
   };
 
+  const appBarStyle: SxProps = {
+    bgcolor: theme.appBar.bgColor,
+  };
+
   useEffect(() => {
     if (!updateVideoUrlProps.error) {
       setChangeVideoModal(false);
@@ -93,7 +100,7 @@ function MessageBar(): JSX.Element {
   }, [changeUsernameMutationProps.data, updateVideoUrlProps.error]);
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={appBarStyle}>
       <Container>
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
