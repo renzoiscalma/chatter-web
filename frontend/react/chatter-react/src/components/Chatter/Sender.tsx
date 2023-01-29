@@ -1,18 +1,36 @@
-import { Box, IconButton, InputAdornment, OutlinedInput } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  SxProps,
+} from "@mui/material";
 import React, { KeyboardEvent, useContext } from "react";
 import { Send } from "@mui/icons-material";
-import SendStatus from "./interface/SendStatus";
-import Message from "./interface/Message";
 import { UsrContxt } from "../../App";
+import { useTheme } from "@mui/material/styles";
 
 interface SenderProps {
   handleSendMessage(message: string): void;
 }
 
 function Sender({ handleSendMessage }: SenderProps): JSX.Element {
+  const theme = useTheme();
   const textFieldStyle = {
     width: "95%",
     margin: "10px",
+    color: theme.common.text.secondary,
+    fieldset: {
+      borderColor: theme.common.text.secondary,
+    },
+  };
+
+  const iconSx: SxProps = {
+    color: theme.chat.bubbleTo,
+    "&.Mui-disabled": {
+      color: theme.chat.bubbleTo,
+      opacity: "60%",
+    },
   };
 
   const sendContainerStyle = {};
@@ -48,6 +66,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
           setValues({ message: "" });
         }}
         edge="end"
+        sx={iconSx}
       >
         <Send />
       </IconButton>

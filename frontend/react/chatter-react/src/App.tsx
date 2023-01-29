@@ -4,25 +4,25 @@ import {
   useLazyQuery,
   useMutation,
 } from "@apollo/client";
+import { ThemeProvider } from "@mui/material/styles";
 import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { useSearchParams } from "react-router-dom";
+import Lobby from "./components/Chatter/interface/Lobby";
+import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
+import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
+import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
 import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
-import { ADD_NEW_USER, CREATE_LOBBY, IS_LOBBY_EXISTING } from "./queries/App";
 import LobbyModal from "./components/Modals/LobbyModal";
-import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
-import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
-import Lobby from "./components/Chatter/interface/Lobby";
-import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
-import { useSearchParams } from "react-router-dom";
+import { ADD_NEW_USER, CREATE_LOBBY, IS_LOBBY_EXISTING } from "./queries/App";
 import { darkTheme, lightTheme } from "./theme";
-import { ThemeProvider } from "@mui/material/styles";
 
 export const UsrContxt = createContext<UserContext>({
   username: "",
   userId: "",
   lobbyId: "",
-  darkMode: false,
+  darkMode: true,
   setUsername: () => {},
   darkModeToggle: () => {},
 });
@@ -31,7 +31,7 @@ function App(): JSX.Element {
   const [username, setUsername] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [lobbyId, setLobbyId] = useState<string>("");
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   const [userCookie, setUserCookie] = useCookies(["user-cookie"]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [lobbyModal, setLobbyModal] = useState<boolean>(false);

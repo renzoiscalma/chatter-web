@@ -23,6 +23,7 @@ import { useContainerDimension } from "../../util/ResizeUtil";
 import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
 import VideoStatusTopicResponse from "../Chatter/interface/response/VideoStatusTopicResponse";
+import { useTheme } from "@mui/material/styles";
 
 interface VideoProps {
   videoId: string;
@@ -61,6 +62,7 @@ function Video(): JSX.Element {
   const ytContainer = useRef<HTMLDivElement>(null);
   const videoSize = useContainerDimension(ytContainer);
   const playerRef = useRef<ReactPlayer>(null);
+  const theme = useTheme();
 
   const videoChanges: SubscriptionResult<
     { videoStatusChanged: VideoStatusTopicResponse },
@@ -88,6 +90,13 @@ function Video(): JSX.Element {
 
   const videoContainerStyle: SxProps = {
     display: "flex",
+    bgcolor: "#000",
+    width: "70vw",
+    height: "calc(100vh - 64px)",
+    "> div": {
+      paddingTop: "30px",
+      paddingBottom: "30px",
+    },
   };
 
   const onReadyHandler = (): void => {
@@ -217,15 +226,13 @@ function Video(): JSX.Element {
     setPlayerProps((values) => ({
       ...values,
       width: videoSize.width,
-      height: videoSize.height,
+      height: videoSize.height - 60,
     }));
   }, [videoSize]);
 
   return (
-    <Box sx={videoContainerStyle}>
-      <div style={{ width: "70vw", height: "99vh" }} ref={ytContainer}>
-        <ReactPlayer {...playerProps} ref={playerRef}></ReactPlayer>
-      </div>
+    <Box sx={videoContainerStyle} ref={ytContainer}>
+      <ReactPlayer {...playerProps} ref={playerRef}></ReactPlayer>
     </Box>
   );
 }

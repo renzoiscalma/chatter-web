@@ -14,6 +14,10 @@ declare module "@mui/material/styles" {
         primary: string;
         secondary: string;
       };
+      base: string;
+    };
+    appBar: {
+      bgColor: string;
     };
   }
 
@@ -28,6 +32,10 @@ declare module "@mui/material/styles" {
         primary?: string;
         secondary?: string;
       };
+      base?: string;
+    };
+    appBar?: {
+      bgColor?: string;
     };
   }
 }
