@@ -31,6 +31,11 @@ interface UserIdProps {
   userIdProps: string;
 }
 
+interface ChatterProps {
+  chatHidden: boolean;
+  setChatHidden: Function;
+}
+
 type MESSAGEACTIONTYPE =
   | { type: "FETCH_ALL"; payload: any } // todo change proper types
   | { type: SendStatus.FAILED; payload: Message & { localDateSent: string } }
@@ -110,7 +115,7 @@ function sendMessageReducer(
   }
 }
 
-function Chatter() {
+function Chatter(props: ChatterProps) {
   const userContext = useContext(UsrContxt);
   const bottomDivRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
@@ -232,7 +237,7 @@ function Chatter() {
 
   return (
     <Box sx={chatterContainer}>
-      <MessageBar></MessageBar>
+      <MessageBar {...props}></MessageBar>
       <Messages messages={messages}>
         <div ref={bottomDivRef} />
       </Messages>

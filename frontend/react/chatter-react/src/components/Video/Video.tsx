@@ -7,12 +7,10 @@ import {
   useSubscription,
 } from "@apollo/client";
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import { SxProps } from "@mui/system";
-import { validate } from "graphql";
-import { eventNames } from "process";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactPlayer, { ReactPlayerProps } from "react-player";
-import YouTube, { YouTubeEvent, YouTubeProps } from "react-youtube";
 import { UsrContxt } from "../../App";
 import {
   GET_VIDEO_STATUS,
@@ -23,11 +21,6 @@ import { useContainerDimension } from "../../util/ResizeUtil";
 import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
 import VideoStatusTopicResponse from "../Chatter/interface/response/VideoStatusTopicResponse";
-import { useTheme } from "@mui/material/styles";
-
-interface VideoProps {
-  videoId: string;
-}
 
 interface LobbyIdProps {
   lobbyId: string;
@@ -91,8 +84,8 @@ function Video(): JSX.Element {
   const videoContainerStyle: SxProps = {
     display: "flex",
     bgcolor: "#000",
-    width: "70vw",
-    height: "calc(100vh - 64px)",
+    width: "inherit",
+    height: "calc(100vh - 64px)", // -64px because of top nav bar
     "> div": {
       paddingTop: "30px",
       paddingBottom: "30px",
@@ -225,8 +218,8 @@ function Video(): JSX.Element {
   useEffect(() => {
     setPlayerProps((values) => ({
       ...values,
-      width: videoSize.width,
-      height: videoSize.height - 60,
+      width: "100%",
+      height: videoSize.height - 60, // -60 because of padding top and bottom, 30 + 30 = 60
     }));
   }, [videoSize]);
 
