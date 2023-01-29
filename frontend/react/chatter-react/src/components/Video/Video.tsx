@@ -90,7 +90,13 @@ function Video(): JSX.Element {
 
   const videoContainerStyle: SxProps = {
     display: "flex",
-    bgcolor: theme.common.base,
+    bgcolor: "#000",
+    width: "70vw",
+    height: "calc(100vh - 64px)",
+    "> div": {
+      paddingTop: "30px",
+      paddingBottom: "30px",
+    },
   };
 
   const onReadyHandler = (): void => {
@@ -220,15 +226,13 @@ function Video(): JSX.Element {
     setPlayerProps((values) => ({
       ...values,
       width: videoSize.width,
-      height: videoSize.height,
+      height: videoSize.height - 60,
     }));
   }, [videoSize]);
 
   return (
-    <Box sx={videoContainerStyle}>
-      <div style={{ width: "70vw", height: "99vh" }} ref={ytContainer}>
-        <ReactPlayer {...playerProps} ref={playerRef}></ReactPlayer>
-      </div>
+    <Box sx={videoContainerStyle} ref={ytContainer}>
+      <ReactPlayer {...playerProps} ref={playerRef}></ReactPlayer>
     </Box>
   );
 }
