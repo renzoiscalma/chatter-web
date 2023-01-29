@@ -1,29 +1,28 @@
-import { useContext, useEffect, useReducer, useRef, useState } from "react";
-import Box from "@mui/material/Box";
-import { Divider, SxProps } from "@mui/material";
-import Messages from "./Messages";
-import Sender from "./Sender";
-import Message from "./interface/Message";
-import SendStatus from "./interface/SendStatus";
 import {
-  MutationTuple,
   QueryResult,
   SubscriptionResult,
   useMutation,
   useQuery,
   useSubscription,
 } from "@apollo/client";
+import { Divider, SxProps } from "@mui/material";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
+import { UsrContxt } from "../../App";
 import {
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
   USERNAME_CHANGED_SUBSCRIPTION,
 } from "../../queries/Chatter";
-import { UsrContxt } from "../../App";
-import MessageBar from "./MessageBar";
+import Message from "./interface/Message";
 import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
 import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
-import { useTheme } from "@mui/material/styles";
+import SendStatus from "./interface/SendStatus";
+import MessageBar from "./MessageBar";
+import Messages from "./Messages";
+import Sender from "./Sender";
 interface LobbyIdProps {
   lobbyId: string;
 }
