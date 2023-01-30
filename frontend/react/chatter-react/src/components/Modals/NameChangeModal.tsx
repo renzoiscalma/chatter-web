@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
+import { SxProps, useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { KeyboardEvent, useState } from "react";
@@ -15,23 +16,53 @@ interface State {
   newUsername: string;
 }
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 function NameChangeModal({
   opened,
   handleCloseModal,
   handleChangeUsername,
 }: NameChangeModalProps): JSX.Element {
+  const theme = useTheme();
+
+  const style: SxProps = {
+    display: "flex",
+    flexDirection: "column",
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    borderRadius: "26px",
+    width: 400,
+    bgcolor: theme.appBar.bgColor,
+    boxShadow: 24,
+    px: 4,
+    py: 2,
+  };
+
+  const confirmButtonSx: SxProps = {
+    flexGrow: 1,
+  };
+
+  const cancelButtonSx: SxProps = {
+    flexGrow: 1,
+  };
+
+  const buttonContainer: SxProps = {
+    display: "flex",
+  };
+
+  const textFieldSx: SxProps = {
+    margin: "18px 0",
+    ".MuiInputLabel-outlined": {
+      color: theme.common.text.secondary + " !important",
+    },
+    input: {
+      color: theme.common.text.secondary,
+    },
+    fieldset: {
+      borderColor: theme.common.text.secondary,
+    },
+  };
+
   const [values, setValues] = useState<State>({
     newUsername: "",
   });
@@ -50,23 +81,41 @@ function NameChangeModal({
   return (
     <Modal open={opened} onClose={handleCloseModal}>
       <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
+        <Typography
+          id="modal-modal-title"
+          variant="h6"
+          component="h2"
+          textAlign="center"
+          color={theme.common.text.secondary}
+        >
           Enter New Username
         </Typography>
         <TextField
+          sx={textFieldSx}
           id="outlined-basic"
-          label="Outlined"
+          label="Username"
           variant="outlined"
           onChange={handleChange("newUsername")}
           onKeyDown={handleKeyDown}
         />
-        <Button
-          onClick={() => {
-            handleChangeUsername(values.newUsername);
-          }}
-        >
-          SUBMIT
-        </Button>
+        <Box sx={buttonContainer}>
+          <Button
+            sx={confirmButtonSx}
+            onClick={() => {
+              handleChangeUsername(values.newUsername);
+            }}
+          >
+            SUBMIT
+          </Button>
+          <Button
+            sx={cancelButtonSx}
+            onClick={() => {
+              handleChangeUsername(values.newUsername);
+            }}
+          >
+            CANCEL
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );

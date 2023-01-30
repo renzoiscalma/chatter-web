@@ -31,7 +31,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
     margin: "12px",
     color: theme.common.text.secondary,
     fieldset: {
-      borderColor: "rgba(0, 0, 0, 0.32)",
+      borderColor: theme.common.text.secondary,
     },
   };
 
@@ -44,7 +44,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
   };
 
   const sendContainerStyle: SxProps = {
-    bgcolor: userContext.darkMode ? theme.appBar.bgColor : theme.chat.bgColor,
+    bgcolor: theme.textInput?.sendBgColor,
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {

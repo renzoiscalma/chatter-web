@@ -13,11 +13,23 @@ declare module "@mui/material/styles" {
       text: {
         primary: string;
         secondary: string;
+        tertiary?: string;
       };
       base: string;
     };
     appBar: {
       bgColor: string;
+    };
+    modal?: {
+      bgColor?: string;
+    };
+    button?: {
+      cancelTextColor?: string;
+      confirmTextColor?: string;
+    };
+    textInput?: {
+      sendBgColor?: string;
+      textColor?: string;
     };
   }
 
@@ -31,11 +43,23 @@ declare module "@mui/material/styles" {
       text?: {
         primary?: string;
         secondary?: string;
+        tertiary?: string;
       };
       base?: string;
     };
     appBar?: {
       bgColor?: string;
+    };
+    modal?: {
+      bgColor?: string;
+    };
+    button?: {
+      cancelTextColor?: string;
+      confirmTextColor?: string;
+    };
+    textInput?: {
+      sendBgColor?: string;
+      textColor?: string;
     };
   }
 }
