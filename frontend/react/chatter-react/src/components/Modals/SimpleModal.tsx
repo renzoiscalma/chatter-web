@@ -6,21 +6,26 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { KeyboardEvent, useState } from "react";
 
-interface NameChangeModalProps {
+interface ModalProps {
   opened: boolean;
   handleCloseModal(): void;
-  handleChangeUsername(newUsername: string): void;
+  handleSubmit(input: string): void;
+  header: string;
+  placeholder: string;
 }
 
-interface State {
-  newUsername: string;
+interface InputState {
+  input: string;
 }
 
-function NameChangeModal({
+// A generic modal that contains a SINGLE text input, a confirm and a cancel button.
+function SimpleModal({
   opened,
   handleCloseModal,
-  handleChangeUsername,
-}: NameChangeModalProps): JSX.Element {
+  handleSubmit,
+  header,
+  placeholder,
+}: ModalProps): JSX.Element {
   const theme = useTheme();
 
   const style: SxProps = {
@@ -63,21 +68,21 @@ function NameChangeModal({
     },
   };
 
-  const [values, setValues] = useState<State>({
-    newUsername: "",
+  const [values, setValues] = useState<InputState>({
+    input: "",
   });
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
-    if (event.key === "Enter" && values.newUsername !== "") {
-      handleChangeUsername(values.newUsername);
+    if (event.key === "Enter" && values.input !== "") {
+      handleSubmit(values.input);
     }
   };
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof InputState) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ [prop]: event.target.value });
     };
-
   return (
     <Modal open={opened} onClose={handleCloseModal}>
       <Box sx={style}>
@@ -88,31 +93,26 @@ function NameChangeModal({
           textAlign="center"
           color={theme.common.text.secondary}
         >
-          Enter New Username
+          {header}
         </Typography>
         <TextField
           sx={textFieldSx}
           id="outlined-basic"
-          label="Username"
+          label={placeholder}
           variant="outlined"
-          onChange={handleChange("newUsername")}
+          onChange={handleChange("input")}
           onKeyDown={handleKeyDown}
         />
         <Box sx={buttonContainer}>
           <Button
             sx={confirmButtonSx}
             onClick={() => {
-              handleChangeUsername(values.newUsername);
+              handleSubmit(values.input);
             }}
           >
             SUBMIT
           </Button>
-          <Button
-            sx={cancelButtonSx}
-            onClick={() => {
-              handleChangeUsername(values.newUsername);
-            }}
-          >
+          <Button sx={cancelButtonSx} onClick={handleCloseModal}>
             CANCEL
           </Button>
         </Box>
@@ -121,4 +121,4 @@ function NameChangeModal({
   );
 }
 
-export default NameChangeModal;
+export default SimpleModal;

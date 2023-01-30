@@ -18,8 +18,7 @@ import { UPDATE_VIDEO } from "../../queries/Video";
 import ChangeUsernameRequest from "../Chatter/interface/requests/ChangeUsernameRequest";
 import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
-import ChangeVideoModal from "../Modals/ChangeVideoModal";
-import NameChangeModal from "../Modals/NameChangeModal";
+import SimpleModal from "../Modals/SimpleModal";
 
 function Navbar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -109,11 +108,7 @@ function Navbar(): JSX.Element {
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton
-              size="large"
-              onClick={handleMenuOpen}
-              color="inherit"
-            >
+            <IconButton size="large" onClick={handleMenuOpen} color="inherit">
               <Settings />
             </IconButton>
             <Menu
@@ -146,19 +141,23 @@ function Navbar(): JSX.Element {
           </Box>
         </Toolbar>
       </Container>
-      <ChangeVideoModal
+      <SimpleModal
         opened={changeVideoModal}
         handleCloseModal={() => {
           setChangeVideoModal(false);
         }}
-        handleChangeVideo={handleChangeVideo}
+        handleSubmit={handleChangeVideo}
+        header={"Input New Video Url"}
+        placeholder={"URL"}
       />
-      <NameChangeModal
+      <SimpleModal
         opened={usernameModal}
         handleCloseModal={() => {
           setUsernameModal(false);
         }}
-        handleChangeUsername={handleChangeUsername}
+        handleSubmit={handleChangeUsername}
+        header={"Input New Username"}
+        placeholder={"Username"}
       />
     </AppBar>
   );
