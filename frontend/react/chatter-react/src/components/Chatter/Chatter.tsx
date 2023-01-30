@@ -155,6 +155,7 @@ function Chatter(props: ChatterProps) {
     display: "flex",
     flexDirection: "column",
     bgcolor: theme.chat.bgColor,
+    minWidth: "inherit",
   };
 
   let initialMessages: Message[] = [] as Message[];

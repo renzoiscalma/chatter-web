@@ -7,20 +7,11 @@ import Navbar from "./Navbar";
 
 function Layout(): JSX.Element {
   const [chatHidden, setChatHidden] = useState<boolean>(false);
-  const [gridContainer, setGridContainer] = useState<SxProps>(gridContainerSx);
   const [videoContainer, setVideoContainer] =
     useState<SxProps>(videoContainerSx);
   const [chatContainer, setChatContainer] = useState<SxProps>(chatContainerSx);
 
   useEffect(() => {
-    setGridContainer((prev: SetStateAction<SxProps<{}>>) => {
-      let style: SxProps = {
-        ...prev,
-        gridTemplateAreas: chatHidden ? gridHiddenChat : gridVisibleChat,
-      };
-      return style;
-    });
-
     setVideoContainer((prev: SetStateAction<SxProps<{}>>) => {
       let style: SxProps = {
         ...prev,
@@ -39,21 +30,22 @@ function Layout(): JSX.Element {
   }, [chatHidden]);
 
   return (
-    <Box sx={gridContainer}>
+    <>
       <Box sx={navBarConatiner}>
         <Navbar></Navbar>
       </Box>
-
-      <Box sx={videoContainer}>
-        <Video></Video>
+      <Box sx={gridContainerSx}>
+        <Box sx={videoContainer}>
+          <Video></Video>
+        </Box>
+        <Box sx={chatContainer}>
+          <Chatter
+            chatHidden={chatHidden}
+            setChatHidden={setChatHidden}
+          ></Chatter>
+        </Box>
       </Box>
-      <Box sx={chatContainer}>
-        <Chatter
-          chatHidden={chatHidden}
-          setChatHidden={setChatHidden}
-        ></Chatter>
-      </Box>
-    </Box>
+    </>
   );
 }
 
@@ -61,7 +53,6 @@ const gridContainerSx: SxProps = {
   display: "inline-grid",
   columnGap: 0,
   gridTemplateAreas: `
-    "navbar navbar navbar navbar"
 		"video video video chat"
 		"video video video chat"
 		"video video video chat"
@@ -71,20 +62,6 @@ const gridContainerSx: SxProps = {
   transition: "all 0.5s ease-in-out",
 };
 
-const gridHiddenChat: string = `
-  "navbar navbar navbar navbar"
-  "video video video chat"
-  "video video video chat"
-  "video video video chat"
-`;
-
-const gridVisibleChat: string = `
-  "navbar navbar navbar navbar"
-  "video video video chat"
-  "video video video chat"
-  "video video video chat"
-`;
-
 const navBarConatiner: SxProps = {
   gridArea: "navbar",
 };
@@ -93,6 +70,7 @@ const chatContainerSx: SxProps = {
   gridArea: "chat",
   position: "relative",
   height: "calc(100vh - 64px)", // -64 pixels because of the height of nav bar
+  width: "30vw",
   transition: "all 0.5s ease-in-out",
 };
 
