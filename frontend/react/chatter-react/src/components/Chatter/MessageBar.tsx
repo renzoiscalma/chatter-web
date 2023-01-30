@@ -27,7 +27,7 @@ function MessageBar({
 
   const appBarStyle: SxProps = {
     bgcolor: theme.appBar.bgColor,
-    borderTop: "1px black solid",
+    borderTop: "1px rgba(0, 0, 0, 0.32) solid",
   };
 
   const toolBarStyle: SxProps = {
