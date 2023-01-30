@@ -9,12 +9,24 @@ export const darkTheme = createTheme({
   common: {
     text: {
       primary: "#e4ecf2",
-      secondary: "#6d7f8f",
+      secondary: "#b9c7d3",
+      tertiary: "#6d7f8f",
     },
     base: "#0e1621",
   },
   appBar: {
     bgColor: "#17212b",
+  },
+  modal: {
+    bgColor: "#ffffff",
+  },
+  button: {
+    cancelTextColor: "#ffffff",
+    confirmTextColor: "#ffffff",
+  },
+  textInput: {
+    sendBgColor: "#17212b",
+    textColor: "#ffffff",
   },
 });
 
@@ -28,10 +40,22 @@ export const lightTheme = createTheme({
     text: {
       primary: "#ffffff",
       secondary: "#000000",
+      tertiary: "#ffffff",
     },
     base: "#ffffff",
   },
   appBar: {
     bgColor: "#248bf5",
+  },
+  modal: {
+    bgColor: "#ffffff",
+  },
+  button: {
+    cancelTextColor: "#ffffff",
+    confirmTextColor: "#ffffff",
+  },
+  textInput: {
+    sendBgColor: "#ffffff",
+    textColor: "#000000",
   },
 });

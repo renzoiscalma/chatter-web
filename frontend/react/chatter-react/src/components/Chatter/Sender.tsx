@@ -1,3 +1,4 @@
+import { Send } from "@mui/icons-material";
 import {
   Box,
   IconButton,
@@ -5,20 +6,29 @@ import {
   OutlinedInput,
   SxProps,
 } from "@mui/material";
-import React, { KeyboardEvent, useContext } from "react";
-import { Send } from "@mui/icons-material";
-import { UsrContxt } from "../../App";
 import { useTheme } from "@mui/material/styles";
+import React, { KeyboardEvent, useContext } from "react";
+import { UsrContxt } from "../../App";
 
 interface SenderProps {
   handleSendMessage(message: string): void;
 }
+interface State {
+  message: string;
+}
 
 function Sender({ handleSendMessage }: SenderProps): JSX.Element {
   const theme = useTheme();
+
+  const userContext = useContext(UsrContxt);
+
+  const [values, setValues] = React.useState<State>({
+    message: "",
+  });
+
   const textFieldStyle = {
     width: "95%",
-    margin: "10px",
+    margin: "12px",
     color: theme.common.text.secondary,
     fieldset: {
       borderColor: theme.common.text.secondary,
@@ -33,16 +43,9 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
     },
   };
 
-  const sendContainerStyle = {};
-
-  interface State {
-    message: string;
-  }
-
-  const userContext = useContext(UsrContxt);
-  const [values, setValues] = React.useState<State>({
-    message: "",
-  });
+  const sendContainerStyle: SxProps = {
+    bgcolor: theme.textInput?.sendBgColor,
+  };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter" && values.message !== "") {

@@ -1,12 +1,12 @@
-import { Box, Paper, SxProps } from "@mui/material";
-import Message from "./interface/Message";
-import React, { StrictMode, useContext } from "react";
-import SendStatus from "./interface/SendStatus";
-import CheckIcon from "@mui/icons-material/Check";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import CheckIcon from "@mui/icons-material/Check";
 import PriorityHigh from "@mui/icons-material/PriorityHigh";
-import { UsrContxt } from "../../App";
+import { Box, Paper, SxProps } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import React, { StrictMode, useContext } from "react";
+import { UsrContxt } from "../../App";
+import Message from "./interface/Message";
+import SendStatus from "./interface/SendStatus";
 
 interface MessageProps {
   messages: Message[];
@@ -135,6 +135,7 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
         message.sender !== userContext.userId ? "flex-start" : "flex-end",
       marginLeft: message.sender !== userContext.userId ? "16px" : "0px",
       marginRight: message.sender !== userContext.userId ? "0px" : "16px",
+      marginBottom: "10px",
     };
   };
 
