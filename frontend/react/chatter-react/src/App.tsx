@@ -68,7 +68,6 @@ function App(): JSX.Element {
   };
 
   const handleDarkModeToggle = () => {
-    console.log("dark mode toggled!");
     setDarkMode((val) => !val);
   };
 
