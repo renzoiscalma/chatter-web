@@ -1,6 +1,16 @@
+import { Theme } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
 export const darkTheme = createTheme({
+  components: {
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          background: "#5e646a",
+        },
+      },
+    },
+  },
   chat: {
     bubbleFrom: "#182533",
     bubbleTo: "#2b5278",
@@ -18,7 +28,7 @@ export const darkTheme = createTheme({
     bgColor: "#17212b",
   },
   modal: {
-    bgColor: "#ffffff",
+    bgColor: "#17212b",
   },
   button: {
     cancelTextColor: "#ffffff",
@@ -27,10 +37,20 @@ export const darkTheme = createTheme({
   textInput: {
     sendBgColor: "#17212b",
     textColor: "#ffffff",
+    borderColor: "#5e646a",
   },
 });
 
-export const lightTheme = createTheme({
+export const lightTheme: Theme = createTheme({
+  components: {
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          background: "#9f9b9b",
+        },
+      },
+    },
+  },
   chat: {
     bubbleFrom: "#e5e5ea",
     bubbleTo: "#248bf5",
@@ -57,5 +77,6 @@ export const lightTheme = createTheme({
   textInput: {
     sendBgColor: "#ffffff",
     textColor: "#000000",
+    borderColor: "#000000",
   },
 });

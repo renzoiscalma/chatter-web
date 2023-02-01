@@ -30,6 +30,7 @@ declare module "@mui/material/styles" {
     textInput?: {
       sendBgColor?: string;
       textColor?: string;
+      borderColor?: string;
     };
   }
 
@@ -60,6 +61,7 @@ declare module "@mui/material/styles" {
     textInput?: {
       sendBgColor?: string;
       textColor?: string;
+      borderColor?: string;
     };
   }
 }

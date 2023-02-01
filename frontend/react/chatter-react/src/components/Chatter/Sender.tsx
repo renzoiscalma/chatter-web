@@ -31,7 +31,10 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
     margin: "12px",
     color: theme.common.text.secondary,
     fieldset: {
-      borderColor: theme.common.text.secondary,
+      borderColor: theme.textInput?.borderColor,
+      "&.MuiOutlinedInput-notchedOutline": {
+        borderColor: theme.textInput?.borderColor + " !important",
+      },
     },
   };
 
@@ -79,6 +82,7 @@ function Sender({ handleSendMessage }: SenderProps): JSX.Element {
   return (
     <Box sx={sendContainerStyle}>
       <OutlinedInput
+        autoComplete="off"
         value={values.message}
         onChange={handleChange("message")}
         onKeyDown={handleKeyDown}

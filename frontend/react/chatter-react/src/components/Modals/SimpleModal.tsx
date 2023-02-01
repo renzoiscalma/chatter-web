@@ -18,7 +18,9 @@ interface InputState {
   input: string;
 }
 
-// A generic modal that contains a SINGLE text input, a confirm and a cancel button.
+/**
+ *  A generic modal that contains a SINGLE text input, a confirm and a cancel button.
+ **/
 function SimpleModal({
   opened,
   handleCloseModal,
@@ -37,7 +39,7 @@ function SimpleModal({
     transform: "translate(-50%, -50%)",
     borderRadius: "26px",
     width: 400,
-    bgcolor: theme.appBar.bgColor,
+    bgcolor: theme.modal?.bgColor,
     boxShadow: 24,
     px: 4,
     py: 2,
@@ -64,7 +66,10 @@ function SimpleModal({
       color: theme.common.text.secondary,
     },
     fieldset: {
-      borderColor: theme.common.text.secondary,
+      borderColor: theme.textInput?.borderColor,
+      "&.MuiOutlinedInput-notchedOutline": {
+        borderColor: theme.textInput?.borderColor + " !important",
+      },
     },
   };
 
@@ -96,6 +101,7 @@ function SimpleModal({
           {header}
         </Typography>
         <TextField
+          autoComplete="off"
           sx={textFieldSx}
           id="outlined-basic"
           label={placeholder}
