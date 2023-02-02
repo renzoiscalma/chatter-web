@@ -12,6 +12,7 @@ interface ModalProps {
   handleSubmit(input: string): void;
   header: string;
   placeholder: string;
+  initialValue?: string;
 }
 
 interface InputState {
@@ -27,6 +28,7 @@ function SimpleModal({
   handleSubmit,
   header,
   placeholder,
+  initialValue,
 }: ModalProps): JSX.Element {
   const theme = useTheme();
 
@@ -88,6 +90,7 @@ function SimpleModal({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ [prop]: event.target.value });
     };
+
   return (
     <Modal open={opened} onClose={handleCloseModal}>
       <Box sx={style}>
@@ -108,6 +111,7 @@ function SimpleModal({
           variant="outlined"
           onChange={handleChange("input")}
           onKeyDown={handleKeyDown}
+          defaultValue={initialValue}
         />
         <Box sx={buttonContainer}>
           <Button
