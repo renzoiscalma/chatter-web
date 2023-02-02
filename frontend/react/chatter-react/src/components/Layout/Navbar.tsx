@@ -107,19 +107,19 @@ function Navbar(): JSX.Element {
       <Container sx={containerSx} maxWidth={false}>
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
-          <Box sx={{ flexGrow: 0 }}>
-            <IconButton size="large" onClick={handleMenuOpen} color="inherit">
-              <Settings />
-            </IconButton>
-          </Box>
           <ClickAwayListener onClickAway={handleMenuClose}>
-            <NavBarMenu
-              menuEl={menuEl}
-              handleClose={handleMenuClose}
-              openChangeUsernameModal={openChangeUsernameModal}
-              openChangeVideoModal={openChangeVideoModal}
-            />
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton size="large" onClick={handleMenuOpen} color="inherit">
+                <Settings />
+              </IconButton>
+            </Box>
           </ClickAwayListener>
+          <NavBarMenu
+            menuEl={menuEl}
+            handleClose={handleMenuClose}
+            openChangeUsernameModal={openChangeUsernameModal}
+            openChangeVideoModal={openChangeVideoModal}
+          />
         </Toolbar>
       </Container>
       <SimpleModal
@@ -139,6 +139,7 @@ function Navbar(): JSX.Element {
         handleSubmit={handleChangeUsername}
         header={"Input New Username"}
         placeholder={"Username"}
+        initialValue={userContext.username}
       />
     </AppBar>
   );

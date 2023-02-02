@@ -1,7 +1,16 @@
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import BadgeIcon from "@mui/icons-material/Badge";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
-import { Divider, ListItemIcon, Menu, Switch, SxProps } from "@mui/material";
+import {
+  Box,
+  Divider,
+  ListItemIcon,
+  Menu,
+  Switch,
+  SxProps,
+  Typography,
+} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
 import { useContext } from "react";
@@ -24,7 +33,7 @@ function NavBarMenu({
 
   const menuStyle: SxProps = {
     transform: "translateY(36px)",
-    maxWidth: "300px",
+    maxWidth: "400px",
     ".MuiPaper-root": {
       background: theme.modal?.bgColor,
       color: theme.common.text.secondary,
@@ -35,11 +44,32 @@ function NavBarMenu({
     "&:hover": {
       backgroundColor: "rgba(0, 0, 0, 0.20)",
     },
+    paddingLeft: "24px",
   };
 
-  const iconColorStyle: SxProps = {
+  const iconStyle: SxProps = {
     color: theme.common.text.secondary,
   };
+
+  const userInfoContainerStyle: SxProps = {
+    padding: "10px 16px",
+    display: "flex",
+    whiteSpace: "nowrap",
+  };
+
+  const userIcon: SxProps = {
+    ...iconStyle,
+    width: "36px",
+    height: "36px",
+    marginRight: "12px",
+  };
+
+  const usernameStyle: SxProps = {
+    fontWeight: "bold",
+    fontStyle: "italic",
+    alignSelf: "center",
+  };
+
   return (
     <Menu
       sx={menuStyle}
@@ -55,25 +85,31 @@ function NavBarMenu({
       open={Boolean(menuEl)}
       onClose={handleClose}
     >
+      <Box sx={userInfoContainerStyle}>
+        <AccountCircleIcon sx={userIcon} />
+        <Typography sx={usernameStyle}>{userContext.username}</Typography>
+      </Box>
+      <Divider sx={{ my: 0.5 }} />
       <MenuItem sx={menuItemStyle} onClick={openChangeUsernameModal}>
         <ListItemIcon>
-          <BadgeIcon sx={iconColorStyle} fontSize="small" />
+          <BadgeIcon sx={iconStyle} fontSize="small" />
         </ListItemIcon>
         Change Username
       </MenuItem>
       <MenuItem sx={menuItemStyle} onClick={openChangeVideoModal}>
         <ListItemIcon>
-          <OndemandVideoIcon sx={iconColorStyle} fontSize="small" />
+          <OndemandVideoIcon sx={iconStyle} fontSize="small" />
         </ListItemIcon>
         Change Video
       </MenuItem>
       <Divider sx={{ my: 0.5 }} />
       <MenuItem sx={menuItemStyle} onClick={userContext.darkModeToggle}>
         <ListItemIcon>
-          <DarkModeIcon sx={iconColorStyle} fontSize="small" />
+          <DarkModeIcon sx={iconStyle} fontSize="small" />
         </ListItemIcon>
         Dark Mode
         <Switch
+          sx={{ marginLeft: "auto" }}
           inputProps={{ "aria-label": "Dark Mode Toggle" }}
           checked={userContext.darkMode}
           onClick={() => (event: React.ChangeEvent<HTMLButtonElement>) => {
