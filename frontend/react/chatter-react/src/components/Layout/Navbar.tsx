@@ -130,7 +130,6 @@ function Navbar(): JSX.Element {
         handleSubmit={handleChangeVideo}
         header={"Input New Video Url"}
         placeholder={"URL"}
-        initialValue={""}
       />
       <SimpleModal
         opened={usernameModal}
