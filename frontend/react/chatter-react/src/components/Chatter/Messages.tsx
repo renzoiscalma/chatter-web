@@ -3,7 +3,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import PriorityHigh from "@mui/icons-material/PriorityHigh";
 import { Box, Paper, SxProps } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import React, { useContext } from "react";
+import React, { StrictMode, useContext } from "react";
 import { UsrContxt } from "../../App";
 import Message from "./interface/Message";
 import SendStatus from "./interface/SendStatus";
