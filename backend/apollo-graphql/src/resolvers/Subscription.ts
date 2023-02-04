@@ -1,11 +1,11 @@
-import { gql } from "apollo-server-core";
+import { withFilter } from "graphql-subscriptions";
 import { pubsub } from "../redis";
 import {
   MESSAGE_ADDED_TOPIC,
   USERNAME_CHANGED_TOPIC,
+  USER_LIST_UPDATED_TOPIC,
   VIDEO_STATUS_TOPIC,
 } from "../utils/const";
-import { withFilter } from "graphql-subscriptions";
 
 interface TopicVariables {
   lobbyId: string;
@@ -47,6 +47,14 @@ const subResolver = {
         () => pubsub.asyncIterator(USERNAME_CHANGED_TOPIC),
         (payload: any, variables: TopicVariables) => {
           return payload.usernameChanged.lobbies.includes(variables.lobbyId);
+        }
+      ),
+    },
+    userListChanged: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(USER_LIST_UPDATED_TOPIC),
+        (payload: any, { lobbyId }: TopicVariables) => {
+          return payload.userListChanged.data.lobbyId === lobbyId;
         }
       ),
     },
