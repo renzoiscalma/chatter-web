@@ -112,14 +112,14 @@ function Navbar(): JSX.Element {
               <IconButton size="large" onClick={handleMenuOpen} color="inherit">
                 <Settings />
               </IconButton>
+              <NavBarMenu
+                menuEl={menuEl}
+                handleClose={handleMenuClose}
+                openChangeUsernameModal={openChangeUsernameModal}
+                openChangeVideoModal={openChangeVideoModal}
+              />
             </Box>
           </ClickAwayListener>
-          <NavBarMenu
-            menuEl={menuEl}
-            handleClose={handleMenuClose}
-            openChangeUsernameModal={openChangeUsernameModal}
-            openChangeVideoModal={openChangeVideoModal}
-          />
         </Toolbar>
       </Container>
       <SimpleModal
