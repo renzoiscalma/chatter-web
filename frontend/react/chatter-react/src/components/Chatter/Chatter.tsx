@@ -57,7 +57,6 @@ function sendMessageReducer(
   let messages = state;
   switch (action.type) {
     case "FETCH_ALL":
-      console.log(action.payload);
       return action.payload.map((message: any): Message => {
         return {
           date: new Date(+message.date),
@@ -87,13 +86,11 @@ function sendMessageReducer(
     }
     case SendStatus.SENT: {
       let { localDateSent, sender } = action.payload;
-      console.log(action.payload, messages);
       let targetMessage = messages.filter(
         (message) =>
           message.localDateSent === localDateSent && message.sender === sender
       );
       targetMessage[0].sendStatus = SendStatus.SENT;
-      console.log(targetMessage);
       return [...messages];
     }
     case "NEW_MESSAGE": {
@@ -213,7 +210,6 @@ function Chatter(props: ChatterProps) {
 
   useEffect(() => {
     // todo add types
-    console.log(newMessageSub.data);
     if (newMessageSub?.data?.messageAdded)
       dispatchMessage({
         type: "NEW_MESSAGE",
@@ -227,7 +223,6 @@ function Chatter(props: ChatterProps) {
   }, [newMessageSub]);
 
   useEffect(() => {
-    console.log(usernameChangedSub);
     if (usernameChangedSub?.data?.usernameChanged) {
       dispatchMessage({
         type: "USERNAME_CHANGED",
