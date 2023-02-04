@@ -49,10 +49,14 @@ function SimpleModal({
 
   const confirmButtonSx: SxProps = {
     flexGrow: 1,
+    color: theme.common.text.accept,
+    fontWeight: "bold",
   };
 
   const cancelButtonSx: SxProps = {
     flexGrow: 1,
+    color: theme.common.text.decline,
+    fontWeight: "bold",
   };
 
   const buttonContainer: SxProps = {
@@ -112,6 +116,7 @@ function SimpleModal({
           onChange={handleChange("input")}
           onKeyDown={handleKeyDown}
           defaultValue={initialValue}
+          placeholder="https://www.youtube.com/watch?v=4WXs3sKu41I"
         />
         <Box sx={buttonContainer}>
           <Button

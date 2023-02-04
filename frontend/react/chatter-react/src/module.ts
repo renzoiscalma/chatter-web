@@ -14,6 +14,8 @@ declare module "@mui/material/styles" {
         primary: string;
         secondary: string;
         tertiary?: string;
+        accept?: string;
+        decline?: string;
       };
       base: string;
     };
@@ -45,6 +47,8 @@ declare module "@mui/material/styles" {
         primary?: string;
         secondary?: string;
         tertiary?: string;
+        accept?: string;
+        decline?: string;
       };
       base?: string;
     };
