@@ -93,7 +93,6 @@ function Video(): JSX.Element {
   };
 
   const onReadyHandler = (): void => {
-    console.log(playerProps);
     setTimeout(() => {
       setPlayerProps((val) => ({
         ...val,
@@ -158,7 +157,6 @@ function Video(): JSX.Element {
   };
 
   useEffect(() => {
-    console.log(videoChanges);
     if (videoChanges?.data?.videoStatusChanged) {
       const { currTime, status, url } =
         videoChanges.data.videoStatusChanged.data;
@@ -202,7 +200,6 @@ function Video(): JSX.Element {
   useEffect(() => {
     if (videoStatus.data) {
       const { data } = videoStatus.data.getVideoStatusOnLobby;
-      console.log(data);
       setPlayerProps((val) => ({
         ...val,
         url: data.url,
