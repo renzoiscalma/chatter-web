@@ -25,9 +25,7 @@ export const useContainerDimension = (ref: React.RefObject<any>) => {
 
     window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [ref]);
 
   return dimensions;
