@@ -19,14 +19,6 @@ function Layout(): JSX.Element {
       };
       return style;
     });
-
-    setChatContainer((prev: SetStateAction<SxProps<{}>>) => {
-      let style: SxProps = {
-        ...prev,
-        left: chatHidden ? "calc(100vh - 10v)" : 0,
-      };
-      return style;
-    });
   }, [chatHidden]);
 
   return (

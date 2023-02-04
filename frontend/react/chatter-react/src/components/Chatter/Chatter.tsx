@@ -184,7 +184,7 @@ function Chatter(props: ChatterProps) {
   };
 
   useEffect(() => {
-    bottomDivRef?.current?.scrollIntoView();
+    if (!props.chatHidden) bottomDivRef?.current?.scrollIntoView();
   }, [messages]);
 
   useEffect(() => {
