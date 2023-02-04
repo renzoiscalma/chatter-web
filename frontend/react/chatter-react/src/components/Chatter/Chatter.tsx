@@ -23,6 +23,7 @@ import SendStatus from "./interface/SendStatus";
 import MessageBar from "./MessageBar";
 import Messages from "./Messages";
 import Sender from "./Sender";
+import UserList from "./UserList";
 interface LobbyIdProps {
   lobbyId: string;
 }
@@ -156,11 +157,14 @@ function Chatter(props: ChatterProps) {
   };
 
   let initialMessages: Message[] = [] as Message[];
+
   const [messages, dispatchMessage] = useReducer(
     sendMessageReducer,
     initialMessages
   );
+
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
 
   const handleSendMessage = (message: string) => {
     const messageStatusIndex: number = messages.length;
@@ -181,8 +185,9 @@ function Chatter(props: ChatterProps) {
   };
 
   useEffect(() => {
-    if (!props.chatHidden) bottomDivRef?.current?.scrollIntoView();
-  }, [messages]);
+    if (!props.chatHidden && !showLobbyUsers)
+      bottomDivRef?.current?.scrollIntoView();
+  }, [messages, showLobbyUsers, props.chatHidden]);
 
   useEffect(() => {
     if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
@@ -233,10 +238,18 @@ function Chatter(props: ChatterProps) {
 
   return (
     <Box sx={chatterContainer}>
-      <MessageBar {...props}></MessageBar>
-      <Messages messages={messages}>
-        <div ref={bottomDivRef} />
-      </Messages>
+      <MessageBar
+        {...props}
+        setShowLobbyUsers={setShowLobbyUsers}
+        showLobbyUsers={showLobbyUsers}
+      />
+      {showLobbyUsers ? (
+        <UserList />
+      ) : (
+        <Messages messages={messages}>
+          <div ref={bottomDivRef} />
+        </Messages>
+      )}
       <Divider></Divider>
       <Sender handleSendMessage={handleSendMessage}></Sender>
     </Box>
