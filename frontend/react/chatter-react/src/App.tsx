@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import Lobby from "./components/Chatter/interface/Lobby";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
 import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
+import GenericResponse from "./components/Chatter/interface/response/GenericResponse";
 import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
 import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
@@ -48,13 +49,15 @@ function App(): JSX.Element {
     null
   > = useMutation(ADD_NEW_USER);
 
+  // TODO interface for params
   const [addUserToLobbyMutation, addUserToLobbbyMutRes]: MutationTuple<
-    { code: number; success: boolean },
+    { addUserToLobby: GenericResponse },
     { lobbyId: string; userId: string }
   > = useMutation(ADD_USER_TO_LOBBY);
 
+  // TODO interface for params
   const [removeUserToLobbyMutation, removeUserToLobbyMutRes]: MutationTuple<
-    { code: number; success: boolean },
+    { removeUserToLobby: GenericResponse },
     { lobbyId: string; userId: string }
   > = useMutation(REMOVE_USER_TO_LOBBY);
 
@@ -162,10 +165,9 @@ function App(): JSX.Element {
     } else {
       setLobbyModal(true);
     }
-
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeUnload", handleBeforeUnload);
-  }, [isLobbyExistingRes, lobbyId]);
+  }, [isLobbyExistingRes, lobbyId, userId]);
 
   // todo proper loading
   if (newUserMutationRes.loading || newUserMutationRes.error)

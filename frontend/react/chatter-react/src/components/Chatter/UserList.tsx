@@ -18,7 +18,10 @@ const userContainer: SxProps = {
   marginLeft: "32px",
 };
 
-function UserList(): JSX.Element {
+interface UserList {
+  users: String[];
+}
+function UserList({ users }: UserList): JSX.Element {
   const theme = useTheme();
 
   const userIcon: SxProps = {
@@ -33,30 +36,14 @@ function UserList(): JSX.Element {
     color: theme.common.text.secondary,
     flexShrink: 0,
   };
-
-  // todo should be from props
-  const users: any = [
-    {
-      name: "Gamer Croquette",
-    },
-    {
-      name: "Emerald Elephant",
-    },
-    {
-      name: "Ripe Mangoes",
-    },
-    {
-      name: "Powerful Chocolate",
-    },
-  ];
   return (
     <StrictMode>
       <Box sx={lobbyListContainer}>
         {users ? (
-          users.map((user: any) => (
+          users.map((user) => (
             <Box sx={userContainer}>
               <AccountCircleIcon sx={userIcon} />
-              <Typography sx={nameStyle}>{user.name}</Typography>
+              <Typography sx={nameStyle}>{user}</Typography>
             </Box>
           ))
         ) : (
