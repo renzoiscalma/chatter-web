@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
-import VideoCollection from "../db/interface/VideoSchema";
 import { GetMessageOnLobbyResponse } from "../models/GetMessagesOnLobbyResponse";
 
 interface getMessagesOnLobbyArgs {
@@ -42,7 +41,6 @@ export const queryResolver = {
       const res = await LobbyCollection.findById(
         new Types.ObjectId(args.lobbyId)
       );
-      console.log(res);
       return res // error handling in the future TODO
         ? {
             code: 200,
@@ -62,6 +60,15 @@ export const queryResolver = {
         code: res ? 200 : 500,
         success: !!res,
         data: res?.videoStatus,
+      };
+    },
+    getCurrentUsersOnLobby: async (_: any, { lobbyId }: any) => {
+      const res = await LobbyCollection.findById(lobbyId);
+      await res?.populate("currentUsers");
+      return {
+        code: res ? 200 : 500,
+        success: Boolean(res),
+        data: res?.currentUsers,
       };
     },
   },

@@ -11,18 +11,22 @@ import { useTheme } from "@mui/material/styles";
 import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import { UsrContxt } from "../../App";
 import {
+  GET_CURR_USERS_ON_LOBBY,
   GET_MESSAGES_ON_LOBBY,
   MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE,
   USERNAME_CHANGED_SUBSCRIPTION,
+  USER_LIST_CHANGED_SUBSCRIPTION,
 } from "../../queries/Chatter";
 import Message from "./interface/Message";
+import GenericResponse from "./interface/response/GenericResponse";
 import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
 import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
 import SendStatus from "./interface/SendStatus";
 import MessageBar from "./MessageBar";
 import Messages from "./Messages";
 import Sender from "./Sender";
+import UserList from "./UserList";
 interface LobbyIdProps {
   lobbyId: string;
 }
@@ -122,6 +126,19 @@ function Chatter(props: ChatterProps) {
     { variables: { lobbyId: userContext.lobbyId } }
   );
 
+  const getCurrentUsersOnLobby: QueryResult<
+    {
+      getCurrentUsersOnLobby: GenericResponse & {
+        data: Array<{ username: string }>;
+      };
+    },
+    {
+      lobbyId: string;
+    }
+  > = useQuery(GET_CURR_USERS_ON_LOBBY, {
+    variables: { lobbyId: userContext.lobbyId },
+  });
+
   // unless yung state ng message is contained to itself
   const [sendMessage, sendMessageProperties] = useMutation(SEND_MESSAGE);
 
@@ -132,6 +149,19 @@ function Chatter(props: ChatterProps) {
     variables: {
       lobbyId: userContext.lobbyId,
       userId: userContext.userId,
+    },
+  });
+
+  const userListChangedSub: SubscriptionResult<
+    {
+      userListChanged: GenericResponse & {
+        data: Array<{ username: string }>;
+      };
+    },
+    { lobbyId: string }
+  > = useSubscription(USER_LIST_CHANGED_SUBSCRIPTION, {
+    variables: {
+      lobbyId: userContext.lobbyId,
     },
   });
 
@@ -156,11 +186,15 @@ function Chatter(props: ChatterProps) {
   };
 
   let initialMessages: Message[] = [] as Message[];
+
   const [messages, dispatchMessage] = useReducer(
     sendMessageReducer,
     initialMessages
   );
+
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
+  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<String[]>([]);
 
   const handleSendMessage = (message: string) => {
     const messageStatusIndex: number = messages.length;
@@ -181,8 +215,9 @@ function Chatter(props: ChatterProps) {
   };
 
   useEffect(() => {
-    if (!props.chatHidden) bottomDivRef?.current?.scrollIntoView();
-  }, [messages]);
+    if (!props.chatHidden && !showLobbyUsers)
+      bottomDivRef?.current?.scrollIntoView();
+  }, [messages, showLobbyUsers, props.chatHidden]);
 
   useEffect(() => {
     if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
@@ -204,9 +239,16 @@ function Chatter(props: ChatterProps) {
     }
 
     if (sendMessageProperties?.error) {
-      console.log("ERROR HAS OCCURED");
+      console.error("ERROR HAS OCCURED");
     }
   }, [sendMessageProperties.data, sendMessageProperties?.error]);
+
+  useEffect(() => {
+    if (getCurrentUsersOnLobby?.data) {
+      let { data } = getCurrentUsersOnLobby.data.getCurrentUsersOnLobby;
+      setCurrentLobbyUsers(data.map((value) => value.username));
+    }
+  }, [getCurrentUsersOnLobby.data]);
 
   useEffect(() => {
     // todo add types
@@ -223,6 +265,13 @@ function Chatter(props: ChatterProps) {
   }, [newMessageSub]);
 
   useEffect(() => {
+    if (userListChangedSub.data?.userListChanged) {
+      let { data } = userListChangedSub.data.userListChanged;
+      setCurrentLobbyUsers(data.map((value) => value.username));
+    }
+  }, [userListChangedSub]);
+
+  useEffect(() => {
     if (usernameChangedSub?.data?.usernameChanged) {
       dispatchMessage({
         type: "USERNAME_CHANGED",
@@ -233,10 +282,18 @@ function Chatter(props: ChatterProps) {
 
   return (
     <Box sx={chatterContainer}>
-      <MessageBar {...props}></MessageBar>
-      <Messages messages={messages}>
-        <div ref={bottomDivRef} />
-      </Messages>
+      <MessageBar
+        {...props}
+        setShowLobbyUsers={setShowLobbyUsers}
+        showLobbyUsers={showLobbyUsers}
+      />
+      {showLobbyUsers ? (
+        <UserList users={currentLobbyUsers} />
+      ) : (
+        <Messages messages={messages}>
+          <div ref={bottomDivRef} />
+        </Messages>
+      )}
       <Divider></Divider>
       <Sender handleSendMessage={handleSendMessage}></Sender>
     </Box>

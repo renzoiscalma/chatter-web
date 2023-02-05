@@ -1,15 +1,14 @@
 import {
-  uniqueNamesGenerator,
-  Config,
   adjectives,
-  colors,
   animals,
+  colors,
+  Config,
   countries,
   NumberDictionary,
+  uniqueNamesGenerator,
 } from "unique-names-generator";
 
 export const generateNewUser = (seed: string | number): string => {
-  console.log(seed);
   const generatorConfig: Config = {
     dictionaries: [adjectives, colors, animals],
     length: 3,
@@ -22,7 +21,6 @@ export const generateNewUser = (seed: string | number): string => {
 };
 
 export const generateNewLobby = (seed: string | number): string => {
-  console.log(seed);
   const generatorConfig: Config = {
     dictionaries: [
       adjectives,

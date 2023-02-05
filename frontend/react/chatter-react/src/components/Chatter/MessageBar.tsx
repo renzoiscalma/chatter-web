@@ -1,3 +1,5 @@
+import ChatIcon from "@mui/icons-material/Chat";
+import PeopleIcon from "@mui/icons-material/People";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -12,14 +14,18 @@ import { SetStateAction, useState } from "react";
 
 interface messageBarProps {
   chatHidden: boolean;
+  showLobbyUsers: boolean;
+  setShowLobbyUsers: Function;
   setChatHidden: Function;
 }
 function MessageBar({
   setChatHidden,
   chatHidden,
+  showLobbyUsers,
+  setShowLobbyUsers,
 }: messageBarProps): JSX.Element {
   const theme = useTheme();
-  const [iconStyle, setIconStyle] = useState<SxProps>({
+  const [toggleHideStyle, setToggleHideStyle] = useState<SxProps>({
     flexGrow: 0,
     transition: "all 0.5s ease-in",
     left: "0",
@@ -31,8 +37,8 @@ function MessageBar({
   };
 
   const toolBarStyle: SxProps = {
-    minHeight: "50px " + "!important",
-    height: "50px " + "!important",
+    minHeight: "50px !important",
+    height: "50px !important",
   };
 
   const typographyStyle: SxProps = {
@@ -41,7 +47,7 @@ function MessageBar({
   };
 
   const toggleChat = (): void => {
-    setIconStyle((prev: SetStateAction<SxProps<{}>>) => {
+    setToggleHideStyle((prev: SetStateAction<SxProps<{}>>) => {
       let style: SxProps = {
         ...prev,
         position: chatHidden ? "absolute" : "relative",
@@ -53,6 +59,10 @@ function MessageBar({
     setChatHidden(!chatHidden);
   };
 
+  const toggleShowLobbyUsers = (): void => {
+    setShowLobbyUsers(!showLobbyUsers);
+  };
+
   return (
     <AppBar position="static">
       <Container sx={appBarStyle}>
@@ -61,13 +71,30 @@ function MessageBar({
             size="medium"
             onClick={toggleChat}
             color="inherit"
-            sx={iconStyle}
+            sx={toggleHideStyle}
           >
             <KeyboardTabIcon />
           </IconButton>
           <Box sx={typographyStyle}>
             <Typography>LOBBY CHAT</Typography>
           </Box>
+          {showLobbyUsers ? (
+            <IconButton
+              size="medium"
+              onClick={toggleShowLobbyUsers}
+              color="inherit"
+            >
+              <ChatIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              size="medium"
+              onClick={toggleShowLobbyUsers}
+              color="inherit"
+            >
+              <PeopleIcon />
+            </IconButton>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

@@ -11,11 +11,18 @@ import { useSearchParams } from "react-router-dom";
 import Lobby from "./components/Chatter/interface/Lobby";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
 import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
+import GenericResponse from "./components/Chatter/interface/response/GenericResponse";
 import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
 import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
 import LobbyModal from "./components/Modals/LobbyModal";
-import { ADD_NEW_USER, CREATE_LOBBY, IS_LOBBY_EXISTING } from "./queries/App";
+import {
+  ADD_NEW_USER,
+  ADD_USER_TO_LOBBY,
+  CREATE_LOBBY,
+  IS_LOBBY_EXISTING,
+  REMOVE_USER_TO_LOBBY,
+} from "./queries/App";
 import { darkTheme, lightTheme } from "./theme";
 
 export const UsrContxt = createContext<UserContext>({
@@ -41,6 +48,18 @@ function App(): JSX.Element {
     { addNewUser: AddNewUserResponse },
     null
   > = useMutation(ADD_NEW_USER);
+
+  // TODO interface for params
+  const [addUserToLobbyMutation, addUserToLobbbyMutRes]: MutationTuple<
+    { addUserToLobby: GenericResponse },
+    { lobbyId: string; userId: string }
+  > = useMutation(ADD_USER_TO_LOBBY);
+
+  // TODO interface for params
+  const [removeUserToLobbyMutation, removeUserToLobbyMutRes]: MutationTuple<
+    { removeUserToLobby: GenericResponse },
+    { lobbyId: string; userId: string }
+  > = useMutation(REMOVE_USER_TO_LOBBY);
 
   const [createLobbyMutation, createLobbyMutationRes]: MutationTuple<
     { createLobby: Lobby },
@@ -69,6 +88,15 @@ function App(): JSX.Element {
 
   const handleDarkModeToggle = () => {
     setDarkMode((val) => !val);
+  };
+
+  const handleBeforeUnload = (): void => {
+    removeUserToLobbyMutation({
+      variables: {
+        lobbyId,
+        userId,
+      },
+    });
   };
 
   useEffect(() => {
@@ -126,11 +154,20 @@ function App(): JSX.Element {
       isLobbyExistingRes.data.isLobbyExisting.isExisting
     ) {
       setLobbyId(lobbyId);
+      // add user to lobby BE
+      addUserToLobbyMutation({
+        variables: {
+          lobbyId,
+          userId,
+        },
+      });
       handleCloseModal();
     } else {
       setLobbyModal(true);
     }
-  }, [isLobbyExistingRes.data]);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeUnload", handleBeforeUnload);
+  }, [isLobbyExistingRes, lobbyId, userId]);
 
   // todo proper loading
   if (newUserMutationRes.loading || newUserMutationRes.error)

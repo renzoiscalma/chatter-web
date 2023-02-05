@@ -38,6 +38,30 @@ export const GET_MESSAGES_ON_LOBBY = gql`
   }
 `;
 
+export const GET_CURR_USERS_ON_LOBBY = gql`
+  query getCurrentUsersOnLobby($lobbyId: ID!) {
+    getCurrentUsersOnLobby(lobbyId: $lobbyId) {
+      code
+      success
+      data {
+        username
+      }
+    }
+  }
+`;
+
+export const USER_LIST_CHANGED_SUBSCRIPTION = gql`
+  subscription userListChanged($lobbyId: ID!) {
+    userListChanged(lobbyId: $lobbyId) {
+      code
+      success
+      data {
+        username
+      }
+    }
+  }
+`;
+
 export const MESSAGE_ADDED_SUBSCRIPTION = gql`
   subscription MessageAdded($lobbyId: ID!, $userId: ID!) {
     messageAdded(lobbyId: $lobbyId, userId: $userId) {

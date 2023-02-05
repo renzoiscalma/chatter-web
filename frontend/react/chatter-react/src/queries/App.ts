@@ -30,3 +30,21 @@ export const CREATE_LOBBY = gql`
     }
   }
 `;
+
+export const ADD_USER_TO_LOBBY = gql`
+  mutation addUserToLobby($lobbyId: ID!, $userId: ID!) {
+    addUserToLobby(lobbyId: $lobbyId, userId: $userId) {
+      code
+      success
+    }
+  }
+`;
+
+export const REMOVE_USER_TO_LOBBY = gql`
+  mutation removeUserToLobby($lobbyId: ID!, $userId: ID!) {
+    removeUserToLobby(lobbyId: $lobbyId, userId: $userId) {
+      code
+      success
+    }
+  }
+`;

@@ -1,4 +1,3 @@
-import { argsToArgsConfig } from "graphql/type/definition";
 import { Document, Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
@@ -9,6 +8,7 @@ import { pubsub } from "../redis";
 import {
   MESSAGE_ADDED_TOPIC,
   USERNAME_CHANGED_TOPIC,
+  USER_LIST_UPDATED_TOPIC,
   VIDEO_STATUS_TOPIC,
 } from "../utils/const";
 import { generateNewUser } from "../utils/NameGenerators";
@@ -43,7 +43,6 @@ const mutationResolver = {
       args: { addMessageInput: AddMessageArgs }
     ): Promise<AddMessageResponse> => {
       const { from, to, message, localDateSent } = args.addMessageInput;
-      console.log(args);
       // date is created here, once it has arrived in backend, probably add middlewares
       // TODO check if lobby and user is existing...
       // TODO use await only or use .then() only https://stackoverflow.com/questions/50905750/error-handling-in-async-await
@@ -100,7 +99,7 @@ const mutationResolver = {
         type: 2,
       });
       await newUser.save().catch((err) => {
-        console.log(err);
+        console.error(err);
         return null;
       });
 
@@ -118,6 +117,7 @@ const mutationResolver = {
       });
 
       await pubsub.publish(USERNAME_CHANGED_TOPIC, {
+        lobbyId: args.lobbyId,
         usernameChanged: {
           code: 200,
           success: true,
@@ -135,30 +135,48 @@ const mutationResolver = {
       };
     },
     addUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
+      if (!args.lobbyId || !args.userId) return;
       const filter = { _id: args.lobbyId };
-      const update = { $push: { currentUsers: args.userId } };
+      const update = { $addToSet: { currentUsers: args.userId } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
       }).catch((err) => {
-        console.log(err);
+        console.error(err);
         return null;
       });
-      console.log(await res?.populate("currentUsers"));
+      await res?.populate("currentUsers");
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+        lobbyId: args.lobbyId,
+        userListChanged: {
+          code: res ? 200 : 500,
+          success: Boolean(res),
+          data: res?.currentUsers,
+        },
+      });
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
       };
     },
     removeUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
+      if (!args.lobbyId || !args.userId) return;
       const filter = { _id: args.lobbyId };
       const update = { $pullAll: { currentUsers: [args.userId] } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
       }).catch((err) => {
-        console.log(err);
+        console.error(err, "args here", args);
         return null;
       });
-      console.log(await res?.populate("currentUsers"));
+      await res?.populate("currentUsers");
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+        lobbyId: args.lobbyId,
+        userListChanged: {
+          code: res ? 200 : 500,
+          success: Boolean(res),
+          data: res?.currentUsers,
+        },
+      });
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
@@ -195,8 +213,6 @@ const mutationResolver = {
           new: true,
         }
       );
-
-      console.log(videoStatus);
       await pubsub.publish(VIDEO_STATUS_TOPIC, {
         videoStatusChanged: {
           code: videoStatus ? 200 : 500, //todo to be changed
