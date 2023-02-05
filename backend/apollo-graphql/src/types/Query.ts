@@ -5,6 +5,7 @@ const Query = gql`
     getUser(id: ID!): User
     getMessage(id: ID!): Message
     getMessagesOnLobby(lobbyId: ID!): GetMessagesOnLobbyResponse
+    getCurrentUsersOnLobby(lobbyId: ID!): UserListResponse
     getVideoStatusOnLobby(lobbyId: ID!): VideoStatusTopicResponse
     isLobbyExisting(lobbyId: ID!): IsLobbyExistingResponse
   }

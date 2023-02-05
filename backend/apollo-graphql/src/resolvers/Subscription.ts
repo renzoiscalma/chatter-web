@@ -54,7 +54,7 @@ const subResolver = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(USER_LIST_UPDATED_TOPIC),
         (payload: any, { lobbyId }: TopicVariables) => {
-          return payload.userListChanged.data.lobbyId === lobbyId;
+          return payload.lobbyId === lobbyId;
         }
       ),
     },

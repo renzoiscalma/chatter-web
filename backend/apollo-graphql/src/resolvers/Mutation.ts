@@ -117,6 +117,7 @@ const mutationResolver = {
       });
 
       await pubsub.publish(USERNAME_CHANGED_TOPIC, {
+        lobbyId: args.lobbyId,
         usernameChanged: {
           code: 200,
           success: true,
@@ -134,6 +135,7 @@ const mutationResolver = {
       };
     },
     addUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
+      if (!args.lobbyId || !args.userId) return;
       const filter = { _id: args.lobbyId };
       const update = { $addToSet: { currentUsers: args.userId } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
@@ -142,8 +144,14 @@ const mutationResolver = {
         console.error(err);
         return null;
       });
+      await res?.populate("currentUsers");
       await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
-        userListChanged: {},
+        lobbyId: args.lobbyId,
+        userListChanged: {
+          code: res ? 200 : 500,
+          success: Boolean(res),
+          data: res?.currentUsers,
+        },
       });
       return {
         code: res ? 200 : 500,
@@ -151,14 +159,23 @@ const mutationResolver = {
       };
     },
     removeUserToLobby: async (_: any, args: any, ___: any, ____: any) => {
-      console.log(args);
+      if (!args.lobbyId || !args.userId) return;
       const filter = { _id: args.lobbyId };
       const update = { $pullAll: { currentUsers: [args.userId] } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
       }).catch((err) => {
-        console.error(err);
+        console.error(err, "args here", args);
         return null;
+      });
+      await res?.populate("currentUsers");
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+        lobbyId: args.lobbyId,
+        userListChanged: {
+          code: res ? 200 : 500,
+          success: Boolean(res),
+          data: res?.currentUsers,
+        },
       });
       return {
         code: res ? 200 : 500,

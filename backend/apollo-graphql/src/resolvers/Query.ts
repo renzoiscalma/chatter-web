@@ -62,5 +62,14 @@ export const queryResolver = {
         data: res?.videoStatus,
       };
     },
+    getCurrentUsersOnLobby: async (_: any, { lobbyId }: any) => {
+      const res = await LobbyCollection.findById(lobbyId);
+      await res?.populate("currentUsers");
+      return {
+        code: res ? 200 : 500,
+        success: Boolean(res),
+        data: res?.currentUsers,
+      };
+    },
   },
 };

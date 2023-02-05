@@ -7,8 +7,8 @@ const Mutations = gql`
     addNewUser: AddNewUserResponse
     changeUsername(userId: ID, newUsername: String): GenericResponse
     createLobby: Lobby
-    addUserToLobby(lobbyId: ID, userId: ID): GenericResponse
-    removeUserToLobby(lobbyId: ID, userId: ID): GenericResponse
+    addUserToLobby(lobbyId: ID!, userId: ID!): GenericResponse
+    removeUserToLobby(lobbyId: ID!, userId: ID!): GenericResponse
     updateVideoStatus(statusInput: VideoStatusInput): GenericResponse
   }
 `;

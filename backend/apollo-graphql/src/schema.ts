@@ -14,7 +14,7 @@ import AddNewUserResponse from "./types/responses/AddNewUserResponse";
 import GenericResponse from "./types/responses/GenericResponse";
 import GetMessagesOnLobbyResponse from "./types/responses/GetMessageOnLobbyResponse";
 import IsLobbyExistingResponse from "./types/responses/IsLobbyExistingResponse";
-import UserListChangedTopicResponse from "./types/responses/UserListChangedTopicResponse";
+import UserListResponse from "./types/responses/UserListResponse";
 import UsernameChangedTopicResponse from "./types/responses/UsernameChangedTopicResponse";
 import VideoStatusTopicResponse from "./types/responses/VideoStatusTopicResponse";
 import Subscription from "./types/Subscription";
@@ -39,7 +39,7 @@ export default makeExecutableSchema({
     IsLobbyExistingResponse,
     VideoStatusTopicResponse,
     UsernameChangedTopicResponse,
-    UserListChangedTopicResponse,
+    UserListResponse,
     GenericResponse,
   ],
   resolvers: [subResolver, mutationResolver, queryResolver],
