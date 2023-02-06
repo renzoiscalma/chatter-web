@@ -17,6 +17,7 @@ import { UPDATE_VIDEO } from "../../queries/Video";
 import ChangeUsernameRequest from "../Chatter/interface/requests/ChangeUsernameRequest";
 import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
+import ShareLobbyModal from "../Modals/ShareLobbyModal";
 import SimpleModal from "../Modals/SimpleModal";
 import NavBarMenu from "./NavBarMenu";
 
@@ -55,6 +56,10 @@ function Navbar(): JSX.Element {
   const openChangeVideoModal = (): void => {
     handleMenuClose();
     setChangeVideoModal(true);
+  };
+
+  const openShareLobbyModal = (): void => {
+    setShareLobbyModal(true);
   };
 
   const handleChangeUsername = (newUsername: string): void => {
@@ -118,7 +123,12 @@ function Navbar(): JSX.Element {
       <Container sx={containerSx} maxWidth={false}>
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
-          <Button variant="contained" sx={shareBtnSx} startIcon={<ReplyIcon />}>
+          <Button
+            variant="contained"
+            sx={shareBtnSx}
+            onClick={openShareLobbyModal}
+            startIcon={<ReplyIcon />}
+          >
             SHARE LOBBY
           </Button>
           <ClickAwayListener onClickAway={handleMenuClose}>
@@ -136,6 +146,13 @@ function Navbar(): JSX.Element {
           </ClickAwayListener>
         </Toolbar>
       </Container>
+      <ShareLobbyModal
+        lobbyUrl={`${process.env.REACT_APP_URI}?lobbyId=${userContext.lobbyId}`}
+        opened={shareLobbyModal}
+        handleCloseModal={() => {
+          setShareLobbyModal(false);
+        }}
+      />
       <SimpleModal
         opened={changeVideoModal}
         handleCloseModal={() => {
