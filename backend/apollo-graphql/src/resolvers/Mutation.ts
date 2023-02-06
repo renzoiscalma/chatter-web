@@ -145,7 +145,7 @@ const mutationResolver = {
         return null;
       });
       await res?.populate("currentUsers");
-      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
@@ -169,7 +169,7 @@ const mutationResolver = {
         return null;
       });
       await res?.populate("currentUsers");
-      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
