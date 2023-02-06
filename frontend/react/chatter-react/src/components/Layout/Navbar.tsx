@@ -1,14 +1,15 @@
+import { MutationTuple, useMutation } from "@apollo/client";
 import ClickAwayListener from "@mui/base/ClickAwayListener";
+import ReplyIcon from "@mui/icons-material/Reply";
 import Settings from "@mui/icons-material/Settings";
+import { Button } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
+import { SxProps, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-
-import { MutationTuple, useMutation } from "@apollo/client";
-import { SxProps, useTheme } from "@mui/material/styles";
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
 import { CHANGE_USERNAME } from "../../queries/MessageBar";
@@ -22,6 +23,7 @@ import NavBarMenu from "./NavBarMenu";
 function Navbar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [changeVideoModal, setChangeVideoModal] = useState<boolean>(false);
+  const [shareLobbyModal, setShareLobbyModal] = useState<boolean>(false);
   const [usernameModal, setUsernameModal] = useState<boolean>(false);
   const userContext = useContext(UsrContxt);
   const theme = useTheme();
@@ -79,6 +81,15 @@ function Navbar(): JSX.Element {
     });
   };
 
+  const shareBtnSx: SxProps = {
+    color: theme.common.text.primary,
+    marginRight: "24px",
+    backgroundColor: "#ED6A5A",
+    "&:hover": {
+      backgroundColor: "#ED6A5A",
+    },
+  };
+
   const appBarStyle: SxProps = {
     bgcolor: theme.appBar.bgColor,
   };
@@ -107,6 +118,9 @@ function Navbar(): JSX.Element {
       <Container sx={containerSx} maxWidth={false}>
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
+          <Button variant="contained" sx={shareBtnSx} startIcon={<ReplyIcon />}>
+            SHARE LOBBY
+          </Button>
           <ClickAwayListener onClickAway={handleMenuClose}>
             <Box sx={{ flexGrow: 0 }}>
               <IconButton size="large" onClick={handleMenuOpen} color="inherit">
