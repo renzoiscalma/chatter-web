@@ -220,6 +220,15 @@ function Video(): JSX.Element {
     }));
   }, [videoSize]);
 
+  // required whenever creating lobby.
+  useEffect(() => {
+    if (userContext.videoUrl)
+      setPlayerProps((val) => ({
+        ...val,
+        url: userContext.videoUrl,
+      }));
+  }, [userContext.videoUrl]);
+
   return (
     <Box sx={videoContainerStyle} ref={ytContainer}>
       <ReactPlayer {...playerProps} ref={playerRef}></ReactPlayer>

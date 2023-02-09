@@ -3,7 +3,9 @@ interface UserContext {
   userId: string;
   lobbyId: string;
   darkMode: boolean;
-  setUsername(username: String): void;
+  videoUrl: string;
+  setVideo(videUrl: string): void;
+  setUsername(username: string): void;
   darkModeToggle(): void;
 }
 export default UserContext;
