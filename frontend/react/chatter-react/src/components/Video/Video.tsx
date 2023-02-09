@@ -97,6 +97,7 @@ function Video(): JSX.Element {
       setPlayerProps((val) => ({
         ...val,
         muted: false,
+        playing: false,
       }));
     }, 500);
   };
@@ -222,6 +223,7 @@ function Video(): JSX.Element {
 
   // required whenever creating lobby.
   useEffect(() => {
+    console.log(userContext.videoUrl);
     if (userContext.videoUrl)
       setPlayerProps((val) => ({
         ...val,

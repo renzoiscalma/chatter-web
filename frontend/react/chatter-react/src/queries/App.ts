@@ -24,9 +24,14 @@ export const IS_LOBBY_EXISTING = gql`
 `;
 
 export const CREATE_LOBBY = gql`
-  mutation {
-    createLobby {
+  mutation createLobby($videoUrl: String) {
+    createLobby(videoUrl: $videoUrl) {
       id
+      video
+      videoStatus {
+        status
+        currTime
+      }
     }
   }
 `;
