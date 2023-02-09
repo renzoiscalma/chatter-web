@@ -13,9 +13,7 @@ import Typography from "@mui/material/Typography";
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
 import { CHANGE_USERNAME } from "../../queries/MessageBar";
-import { UPDATE_VIDEO } from "../../queries/Video";
 import ChangeUsernameRequest from "../Chatter/interface/requests/ChangeUsernameRequest";
-import UpdateVideoStatusRequest from "../Chatter/interface/requests/UpdateVideoStatusRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
 import SimpleModal from "../Modals/SimpleModal";
@@ -28,11 +26,6 @@ function Navbar(): JSX.Element {
   const [usernameModal, setUsernameModal] = useState<boolean>(false);
   const userContext = useContext(UsrContxt);
   const theme = useTheme();
-
-  const [videoUrlMutation, videoUrlMutationProps]: MutationTuple<
-    { updateVideoStatus: GenericResponse },
-    { statusInput: UpdateVideoStatusRequest }
-  > = useMutation(UPDATE_VIDEO);
 
   const [usernameUrlMutation, usernameUrlMutationProps]: MutationTuple<
     { changeUsername: GenericResponse },
@@ -73,17 +66,8 @@ function Navbar(): JSX.Element {
   };
 
   const handleChangeVideo = (newVideoUrl: string): void => {
-    videoUrlMutation({
-      variables: {
-        statusInput: {
-          url: newVideoUrl,
-          lobbyId: userContext.lobbyId,
-          userId: userContext.userId + "-", // needed to update self's video as well
-          currTime: 0,
-          status: -1,
-        },
-      },
-    });
+    userContext.setVideo(newVideoUrl);
+    setChangeVideoModal(false);
   };
 
   const shareBtnSx: SxProps = {
@@ -103,13 +87,6 @@ function Navbar(): JSX.Element {
     margin: "0",
     padding: "0 10px",
   };
-
-  useEffect(() => {
-    if (!videoUrlMutationProps.error) {
-      setChangeVideoModal(false);
-      handleMenuClose();
-    } else console.log("something went wrong updating the video url");
-  }, [videoUrlMutationProps.data, videoUrlMutationProps.error]);
 
   useEffect(() => {
     if (!usernameUrlMutationProps.error) {

@@ -10,6 +10,7 @@ import { useCookies } from "react-cookie";
 import { useSearchParams } from "react-router-dom";
 import Lobby from "./components/Chatter/interface/Lobby";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
+import UpdateVideoStatusRequest from "./components/Chatter/interface/requests/UpdateVideoStatusRequest";
 import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
 import GenericResponse from "./components/Chatter/interface/response/GenericResponse";
 import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
@@ -23,21 +24,25 @@ import {
   IS_LOBBY_EXISTING,
   REMOVE_USER_TO_LOBBY,
 } from "./queries/App";
+import { UPDATE_VIDEO } from "./queries/Video";
 import { darkTheme, lightTheme } from "./theme";
 
 export const UsrContxt = createContext<UserContext>({
   username: "",
   userId: "",
   lobbyId: "",
+  videoUrl: "",
   darkMode: true,
   setUsername: () => {},
   darkModeToggle: () => {},
+  setVideo: () => {},
 });
 
 function App(): JSX.Element {
   const [username, setUsername] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [lobbyId, setLobbyId] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string>("");
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [userCookie, setUserCookie] = useCookies(["user-cookie"]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,7 +68,7 @@ function App(): JSX.Element {
 
   const [createLobbyMutation, createLobbyMutationRes]: MutationTuple<
     { createLobby: Lobby },
-    null
+    { videoUrl: string }
   > = useMutation(CREATE_LOBBY);
 
   const [isLobbyExisting, isLobbyExistingRes]: LazyQueryResultTuple<
@@ -71,11 +76,23 @@ function App(): JSX.Element {
     IsLobbyExistingRequest
   > = useLazyQuery(IS_LOBBY_EXISTING);
 
-  const createLobby = () => {
-    // todo create loading screen when loading a lobby
-    console.log("creating lobby...");
+  const [videoUrlMutation, videoUrlMutationProps]: MutationTuple<
+    { updateVideoStatus: GenericResponse },
+    { statusInput: UpdateVideoStatusRequest }
+  > = useMutation(UPDATE_VIDEO);
+
+  const createLobby = (videoUrl: string) => {
     // TODO add 1 second delay, loading = true modal should have a spinner inside
-    createLobbyMutation();
+    createLobbyMutation({
+      variables: {
+        videoUrl: videoUrl,
+      },
+    });
+    setVideoUrl(videoUrl);
+  };
+
+  const handleSetVideo = (videoUrl: string) => {
+    setVideoUrl(videoUrl);
   };
 
   const handleSetUsername = (username: string) => {
@@ -119,6 +136,21 @@ function App(): JSX.Element {
       setLobbyModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (lobbyId)
+      videoUrlMutation({
+        variables: {
+          statusInput: {
+            url: videoUrl,
+            lobbyId: lobbyId,
+            userId: userId + "-", // needed to update self's video as well
+            currTime: 0,
+            status: -1,
+          },
+        },
+      });
+  }, [videoUrl]);
 
   useEffect(() => {
     if (newUserMutationRes.data) {
@@ -169,10 +201,6 @@ function App(): JSX.Element {
     return () => window.removeEventListener("beforeUnload", handleBeforeUnload);
   }, [isLobbyExistingRes, lobbyId, userId]);
 
-  // todo proper loading
-  if (newUserMutationRes.loading || newUserMutationRes.error)
-    return <>LOADING</>;
-
   return (
     <UsrContxt.Provider
       value={{
@@ -181,6 +209,8 @@ function App(): JSX.Element {
         userId,
         lobbyId,
         darkMode,
+        videoUrl,
+        setVideo: handleSetVideo,
         darkModeToggle: handleDarkModeToggle,
       }}
     >

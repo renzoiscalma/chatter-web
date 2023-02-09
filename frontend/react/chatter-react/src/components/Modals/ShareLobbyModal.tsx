@@ -1,3 +1,4 @@
+import { Check } from "@mui/icons-material";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import {
   Box,
@@ -6,10 +7,12 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Tooltip,
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import { SxProps, useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { SyntheticEvent, useRef, useState } from "react";
 
 interface ShareLobbyModalProps {
   lobbyUrl: string;
@@ -22,6 +25,9 @@ const ShareLobbyModal = ({
   handleCloseModal,
 }: ShareLobbyModalProps): JSX.Element => {
   const theme = useTheme();
+  const [copiedLobbyUrl, setCopiedLobbyUrl] = useState<boolean>(false);
+  const inputFieldRef = useRef(null);
+
   const style: SxProps = {
     display: "flex",
     flexDirection: "column",
@@ -36,6 +42,7 @@ const ShareLobbyModal = ({
     px: 4,
     py: 2,
   };
+
   const textFieldSx: SxProps = {
     marginBottom: "24px",
     ".MuiInputLabel-outlined": {
@@ -43,6 +50,9 @@ const ShareLobbyModal = ({
     },
     input: {
       color: theme.common.text.secondary,
+      "&:hover": {
+        cursor: "pointer",
+      },
     },
     fieldset: {
       borderColor: theme.textInput?.borderColor,
@@ -51,22 +61,39 @@ const ShareLobbyModal = ({
       },
     },
   };
+
   const inputLabelSx: SxProps = {
     color: theme.common.text.secondary,
     "&.Mui-focused": {
       color: theme.common.text.secondary,
     },
   };
+
   const copyIconSx: SxProps = {
     color: theme.common.text.secondary,
   };
+
   const headerStyle: SxProps = {
-    marginBottom: "24px",
+    marginBottom: "36px",
   };
 
-  const handleCopyAllClick = (): void => {
+  const handleCopyAllClick = (event: SyntheticEvent): void => {
     navigator.clipboard.writeText(lobbyUrl);
+    // highlight text
+    (event.target as HTMLTextAreaElement).select();
+    setCopiedLobbyUrl(true);
+
+    setTimeout(() => {
+      setCopiedLobbyUrl(false);
+    }, 3000);
   };
+
+  const checkIconSx: SxProps = {
+    color: theme.common.text.secondary,
+  };
+
+  const tooltipTitle = (): string =>
+    copiedLobbyUrl ? "Copied!" : "Click to copy url";
 
   return (
     <>
@@ -82,28 +109,36 @@ const ShareLobbyModal = ({
           >
             Share this URL to your friends!
           </Typography>
-          <FormControl variant="outlined">
-            <InputLabel htmlFor="copy-url" sx={inputLabelSx}>
-              Copy Url
-            </InputLabel>
-            <OutlinedInput
-              autoComplete="off"
-              id="copy-url"
-              sx={textFieldSx}
-              type="text"
-              aria-readonly
-              defaultValue={lobbyUrl}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton onClick={handleCopyAllClick}>
-                    <CopyAllIcon sx={copyIconSx} />
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Copy Url"
-              readOnly
-            />
-          </FormControl>
+          <Tooltip title={tooltipTitle()} placement="top">
+            <FormControl variant="outlined">
+              <InputLabel htmlFor="copy-url" sx={inputLabelSx}>
+                Copy Url
+              </InputLabel>
+              <OutlinedInput
+                onClick={handleCopyAllClick}
+                autoComplete="off"
+                id="copy-url"
+                sx={textFieldSx}
+                type="text"
+                aria-readonly
+                defaultValue={lobbyUrl}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleCopyAllClick}>
+                      {copiedLobbyUrl ? (
+                        <Check sx={checkIconSx} />
+                      ) : (
+                        <CopyAllIcon sx={copyIconSx} />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Lobby Url"
+                ref={inputFieldRef}
+                readOnly
+              />
+            </FormControl>
+          </Tooltip>
         </Box>
       </Modal>
     </>

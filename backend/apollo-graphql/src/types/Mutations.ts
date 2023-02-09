@@ -6,7 +6,7 @@ const Mutations = gql`
     addMessage(addMessageInput: AddMessageInput): AddMessageResponse
     addNewUser: AddNewUserResponse
     changeUsername(userId: ID, newUsername: String): GenericResponse
-    createLobby: Lobby
+    createLobby(videoUrl: String): Lobby
     addUserToLobby(lobbyId: ID!, userId: ID!): GenericResponse
     removeUserToLobby(lobbyId: ID!, userId: ID!): GenericResponse
     updateVideoStatus(statusInput: VideoStatusInput): GenericResponse

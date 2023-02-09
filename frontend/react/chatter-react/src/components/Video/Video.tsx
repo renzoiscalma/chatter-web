@@ -97,6 +97,7 @@ function Video(): JSX.Element {
       setPlayerProps((val) => ({
         ...val,
         muted: false,
+        playing: false,
       }));
     }, 500);
   };
@@ -219,6 +220,16 @@ function Video(): JSX.Element {
       height: videoSize.height - 60, // -60 because of padding top and bottom, 30 + 30 = 60
     }));
   }, [videoSize]);
+
+  // required whenever creating lobby.
+  useEffect(() => {
+    console.log(userContext.videoUrl);
+    if (userContext.videoUrl)
+      setPlayerProps((val) => ({
+        ...val,
+        url: userContext.videoUrl,
+      }));
+  }, [userContext.videoUrl]);
 
   return (
     <Box sx={videoContainerStyle} ref={ytContainer}>

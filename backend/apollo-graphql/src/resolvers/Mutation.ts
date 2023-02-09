@@ -183,11 +183,35 @@ const mutationResolver = {
       };
     },
     createLobby: async (_: any, args: any, ___: any, ____: any) => {
-      const newLobby = new LobbyCollection({
-        currentUsers: [],
-        video: "",
+      let newVideo = new VideoCollection({
+        currTime: 0,
+        status: 2,
+        url: args.videoUrl,
       });
-      return await newLobby.save();
+      newVideo = await newVideo.save();
+
+      let newLobby = new LobbyCollection({
+        currentUsers: [],
+        video: args.videoUrl,
+        videoStatus: newVideo,
+      });
+
+      newLobby = await newLobby.save();
+
+      await pubsub.publish(VIDEO_STATUS_TOPIC, {
+        videoStatusChanged: {
+          code: newVideo ? 200 : 500, //todo to be changed
+          success: !!newVideo,
+          data: {
+            currTime: newVideo.currTime,
+            status: newVideo.status,
+            lobbyId: newLobby.id,
+            userId: "N/A",
+          },
+        },
+      });
+
+      return newLobby;
     },
     updateVideoStatus: async (
       _: any,
