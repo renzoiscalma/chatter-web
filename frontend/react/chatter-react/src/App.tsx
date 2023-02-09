@@ -221,7 +221,7 @@ function App(): JSX.Element {
             createLobby={createLobby}
             handleCloseModal={handleCloseModal}
           />
-          {lobbyId && <Layout />}
+          <Layout />
         </div>
       </ThemeProvider>
     </UsrContxt.Provider>
