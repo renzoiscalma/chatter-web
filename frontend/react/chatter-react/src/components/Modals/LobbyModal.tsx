@@ -5,6 +5,7 @@ import Modal from "@mui/material/Modal";
 import { SxProps, useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { KeyboardEvent, useState } from "react";
+import { validateYtUrl } from "../../util/helpers";
 
 interface LobbyModalProps {
   opened: boolean;
@@ -13,6 +14,7 @@ interface LobbyModalProps {
 }
 interface InputState {
   input: string;
+  error: boolean;
 }
 
 const LobbyModal = ({
@@ -42,7 +44,7 @@ const LobbyModal = ({
   const textFieldSx: SxProps = {
     margin: "18px 0",
     ".MuiInputLabel-outlined": {
-      color: theme.common.text.secondary + " !important",
+      color: theme.common.text.secondary,
     },
     input: {
       color: theme.common.text.secondary,
@@ -50,29 +52,57 @@ const LobbyModal = ({
     fieldset: {
       borderColor: theme.textInput?.borderColor,
       "&.MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.textInput?.borderColor + " !important",
+        borderColor: theme.textInput?.borderColor,
       },
+      "&.Mui-error": {
+        borderColor: theme.common.text.decline,
+      },
+    },
+    ".MuiFormHelperText-root": {
+      margin: "0 auto",
+      marginTop: "5px",
     },
   };
 
   const [values, setValues] = useState<InputState>({
     input: "https://www.youtube.com/watch?v=4WXs3sKu41I",
+    error: false,
   });
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter" && values.input !== "") {
-      createLobby(values.input);
+      submitHandler();
     }
   };
 
   const handleChange =
     (prop: keyof InputState) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ [prop]: event.target.value });
+      setValues((values) => ({
+        ...values,
+        [prop]: event.target.value,
+        error: false,
+      }));
     };
 
+  const validateField = (): boolean => {
+    if (!validateYtUrl(values.input)) return false;
+    return true;
+  };
+
+  const submitHandler = (): void => {
+    if (validateField()) createLobby(values.input);
+    else setValues((values) => ({ ...values, error: true }));
+  };
+
+  const onCloseHandler = (_: object, reason: string) => {
+    console.log(reason);
+    if (reason !== "backdropClick" && reason !== "escapeKeyDown")
+      handleCloseModal();
+  };
+
   return (
-    <Modal open={opened} onClose={handleCloseModal}>
+    <Modal open={opened} onClose={onCloseHandler}>
       <Box sx={style}>
         <Typography
           id="modal-modal-title"
@@ -83,6 +113,8 @@ const LobbyModal = ({
           Create your lobby for you and your friends!
         </Typography>
         <TextField
+          error={values.error}
+          helperText={values.error ? "Incorrect entry." : ""}
           autoComplete="off"
           sx={textFieldSx}
           id="outlined-basic"
@@ -93,7 +125,7 @@ const LobbyModal = ({
           defaultValue="https://www.youtube.com/watch?v=4WXs3sKu41I"
           placeholder="https://www.youtube.com/watch?v=4WXs3sKu41I"
         />
-        <Button onClick={() => createLobby(values.input)}>Create Lobby!</Button>
+        <Button onClick={() => submitHandler()}>Create Lobby!</Button>
       </Box>
     </Modal>
   );
