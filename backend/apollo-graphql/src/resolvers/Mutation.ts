@@ -66,7 +66,7 @@ const mutationResolver = {
           populate: { path: "currentUsers" },
         },
       ]);
-
+      // use lobby params for efficiency
       await pubsub.publish(MESSAGE_ADDED_TOPIC, {
         messageAdded: {
           lobbyId: newMessage.get("to")?._id,
@@ -144,7 +144,9 @@ const mutationResolver = {
         console.error(err);
         return null;
       });
+
       await res?.populate("currentUsers");
+
       pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
@@ -153,6 +155,23 @@ const mutationResolver = {
           data: res?.currentUsers,
         },
       });
+      const user = await UserCollection.findOne(args.userId);
+      await pubsub.publish(MESSAGE_ADDED_TOPIC, {
+        messageAdded: {
+          lobbyId: args.lobbyId,
+          messages: [
+            {
+              id: "Admin",
+              from: "Admin",
+              to: args.lobbyId,
+              message: `${user?.username} has joined the lobby`,
+              date: new Date(),
+              type: 3,
+            },
+          ],
+        },
+      });
+
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
