@@ -144,31 +144,14 @@ const mutationResolver = {
         console.error(err);
         return null;
       });
-
       await res?.populate("currentUsers");
 
-      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
           success: Boolean(res),
           data: res?.currentUsers,
-        },
-      });
-      const user = await UserCollection.findOne(args.userId);
-      await pubsub.publish(MESSAGE_ADDED_TOPIC, {
-        messageAdded: {
-          lobbyId: args.lobbyId,
-          messages: [
-            {
-              id: "Admin",
-              from: "Admin",
-              to: args.lobbyId,
-              message: `${user?.username} has joined the lobby`,
-              date: new Date(),
-              type: 3,
-            },
-          ],
         },
       });
 
@@ -188,7 +171,8 @@ const mutationResolver = {
         return null;
       });
       await res?.populate("currentUsers");
-      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,

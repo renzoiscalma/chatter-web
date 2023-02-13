@@ -9,4 +9,5 @@ export default interface Message {
   imgUrl?: string;
   sendStatus?: SendStatus;
   localDateSent?: string;
+  sendType?: number;
 }

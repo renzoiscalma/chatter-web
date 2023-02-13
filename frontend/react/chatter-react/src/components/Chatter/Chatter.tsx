@@ -69,6 +69,7 @@ function sendMessageReducer(
           senderUsername: message.from.username,
           to: "Lobby",
           sendStatus: SendStatus.SENT,
+          sendType: 1,
         };
       });
     case SendStatus.FAILED:
@@ -194,7 +195,7 @@ function Chatter(props: ChatterProps) {
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
-  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<String[]>([]);
+  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<string[]>([]);
 
   const handleSendMessage = (message: string) => {
     const messageStatusIndex: number = messages.length;
@@ -260,6 +261,7 @@ function Chatter(props: ChatterProps) {
           sender: value.from.id,
           senderUsername: value.from.username,
           date: new Date(String(value.date)),
+          sendType: 1,
         })),
       });
   }, [newMessageSub]);
@@ -267,7 +269,26 @@ function Chatter(props: ChatterProps) {
   useEffect(() => {
     if (userListChangedSub.data?.userListChanged) {
       let { data } = userListChangedSub.data.userListChanged;
-      setCurrentLobbyUsers(data.map((value) => value.username));
+      let dataLobbyUsers = data.map((value) => value.username);
+      // get new user
+      let newUser = dataLobbyUsers.filter(
+        (user) => !currentLobbyUsers.includes(user)
+      );
+      console.log(newUser);
+      setCurrentLobbyUsers(dataLobbyUsers);
+      if (newUser[0]) {
+        dispatchMessage({
+          type: "NEW_MESSAGE",
+          payload: [
+            {
+              message: `${newUser[0]} has entered the lobby!`,
+              sender: "Admin",
+              to: "",
+              sendType: -1,
+            },
+          ],
+        });
+      }
     }
   }, [userListChangedSub]);
 
