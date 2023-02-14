@@ -176,6 +176,12 @@ function App(): JSX.Element {
       setLobbyId(id);
       handleCloseModal();
       navigate("/?lobbyId=" + id);
+      addUserToLobbyMutation({
+        variables: {
+          lobbyId: id,
+          userId,
+        },
+      });
     }
   }, [createLobbyMutationRes.data]);
 
