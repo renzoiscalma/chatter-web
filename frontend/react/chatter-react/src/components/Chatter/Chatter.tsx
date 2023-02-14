@@ -274,23 +274,48 @@ function Chatter(props: ChatterProps) {
       let newUser = dataLobbyUsers.filter(
         (user) => !currentLobbyUsers.includes(user)
       );
+      let userLeft = currentLobbyUsers.filter(
+        (user) => !dataLobbyUsers.includes(user)
+      );
+
       console.log(newUser);
       setCurrentLobbyUsers(dataLobbyUsers);
+
       if (newUser[0]) {
-        dispatchMessage({
-          type: "NEW_MESSAGE",
-          payload: [
-            {
-              message: `${newUser[0]} has entered the lobby!`,
-              sender: "Admin",
-              to: "",
-              sendType: -1,
-            },
-          ],
-        });
+        dispatchMessageEnteredLobby(newUser[0]);
+      } else if (userLeft[0]) {
+        dispatchMessageEnteredLobby(userLeft[0]);
       }
     }
   }, [userListChangedSub]);
+
+  const dispatchMessageEnteredLobby = (user: string): void => {
+    dispatchMessage({
+      type: "NEW_MESSAGE",
+      payload: [
+        {
+          message: `${user} has entered the lobby.`,
+          sender: "Admin",
+          to: "Everyone",
+          sendType: -1,
+        },
+      ],
+    });
+  };
+
+  const dispatchMessageLeftLobby = (user: string): void => {
+    dispatchMessage({
+      type: "NEW_MESSAGE",
+      payload: [
+        {
+          message: `${user} has left the lobby.`,
+          sender: "Admin",
+          to: "Everyone",
+          sendType: -1,
+        },
+      ],
+    });
+  };
 
   useEffect(() => {
     if (usernameChangedSub?.data?.usernameChanged) {
