@@ -270,21 +270,18 @@ function Chatter(props: ChatterProps) {
     if (userListChangedSub.data?.userListChanged) {
       let { data } = userListChangedSub.data.userListChanged;
       let dataLobbyUsers = data.map((value) => value.username);
-      // get new user
       let newUser = dataLobbyUsers.filter(
         (user) => !currentLobbyUsers.includes(user)
       );
       let userLeft = currentLobbyUsers.filter(
         (user) => !dataLobbyUsers.includes(user)
       );
-
-      console.log(newUser);
       setCurrentLobbyUsers(dataLobbyUsers);
 
-      if (newUser[0]) {
+      if (newUser[0] && newUser[0] !== userContext.username) {
         dispatchMessageEnteredLobby(newUser[0]);
-      } else if (userLeft[0]) {
-        dispatchMessageEnteredLobby(userLeft[0]);
+      } else if (userLeft[0] && newUser[0] !== userContext.username) {
+        dispatchMessageLeftLobby(userLeft[0]);
       }
     }
   }, [userListChangedSub]);
