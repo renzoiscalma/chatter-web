@@ -13,11 +13,11 @@ export const generateNewUser = (seed: string | number): string => {
     dictionaries: [adjectives, colors, animals],
     length: 3,
     style: "capital",
-    separator: " ",
+    separator: "",
     seed,
   };
 
-  return uniqueNamesGenerator(generatorConfig);
+  return uniqueNamesGenerator(generatorConfig) + "#" + getRandomInt(999);
 };
 
 export const generateNewLobby = (seed: string | number): string => {
@@ -35,3 +35,7 @@ export const generateNewLobby = (seed: string | number): string => {
 
   return uniqueNamesGenerator(generatorConfig);
 };
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}

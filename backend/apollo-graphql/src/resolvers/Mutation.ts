@@ -99,8 +99,8 @@ const mutationResolver = {
         type: 2,
       });
       await newUser.save().catch((err) => {
-        console.error(err);
-        return null;
+        console.error("addNewUser Err", err);
+        return undefined;
       });
 
       return {
@@ -141,7 +141,7 @@ const mutationResolver = {
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
       }).catch((err) => {
-        console.error(err);
+        console.error("Add User Err", err);
         return null;
       });
       await res?.populate("currentUsers");
@@ -154,7 +154,6 @@ const mutationResolver = {
           data: res?.currentUsers,
         },
       });
-
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
@@ -167,7 +166,7 @@ const mutationResolver = {
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
       }).catch((err) => {
-        console.error(err, "args here", args);
+        console.error("RemoveUserToLobbyError", err, args);
         return null;
       });
       await res?.populate("currentUsers");
