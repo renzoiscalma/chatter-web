@@ -211,13 +211,18 @@ function Chatter(props: ChatterProps) {
         index: messageStatusIndex,
         localDateSent: new Date().getTime() + "",
         callback: sendMessage,
+        sendType: 1,
       },
     });
   };
 
   useEffect(() => {
-    if (!props.chatHidden && !showLobbyUsers)
-      bottomDivRef?.current?.scrollIntoView();
+    if (!props.chatHidden && !showLobbyUsers) {
+      // wait for the transition to end
+      setTimeout(() => {
+        bottomDivRef?.current?.scrollIntoView();
+      }, 750);
+    }
   }, [messages, showLobbyUsers, props.chatHidden]);
 
   useEffect(() => {
