@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
 import { CHANGE_USERNAME } from "../../queries/MessageBar";
+import { validateUsername, validateYtUrl } from "../../util/helpers";
 import ChangeUsernameRequest from "../Chatter/interface/requests/ChangeUsernameRequest";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
@@ -138,6 +139,7 @@ function Navbar(): JSX.Element {
         handleSubmit={handleChangeVideo}
         header={"Input New Video Url"}
         placeholder={"URL"}
+        validation={validateYtUrl}
       />
       <SimpleModal
         opened={usernameModal}
@@ -148,6 +150,7 @@ function Navbar(): JSX.Element {
         header={"Input New Username"}
         placeholder={"Username"}
         initialValue={userContext.username}
+        validation={validateUsername}
       />
     </AppBar>
   );

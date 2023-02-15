@@ -13,10 +13,12 @@ interface ModalProps {
   header: string;
   placeholder: string;
   initialValue?: string;
+  validation?(input: string): boolean;
 }
 
 interface InputState {
   input: string;
+  error: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ function SimpleModal({
   header,
   placeholder,
   initialValue,
+  validation,
 }: ModalProps): JSX.Element {
   const theme = useTheme();
 
@@ -74,13 +77,21 @@ function SimpleModal({
     fieldset: {
       borderColor: theme.textInput?.borderColor,
       "&.MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.textInput?.borderColor + " !important",
+        borderColor: theme.textInput?.borderColor,
       },
+      "&.Mui-error": {
+        borderColor: theme.common.text.decline,
+      },
+    },
+    ".MuiFormHelperText-root": {
+      margin: "0 auto",
+      marginTop: "5px",
     },
   };
 
   const [values, setValues] = useState<InputState>({
     input: "",
+    error: false,
   });
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
@@ -92,11 +103,35 @@ function SimpleModal({
   const handleChange =
     (prop: keyof InputState) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ [prop]: event.target.value });
+      setValues((values) => ({
+        ...values,
+        [prop]: event.target.value,
+        error: false,
+      }));
     };
 
+  const submitHandler = (): void => {
+    if (validation) {
+      if (validation(values.input)) {
+        handleSubmit(values.input);
+      } else {
+        setValues((values) => ({ ...values, error: true }));
+      }
+    } else {
+      handleSubmit(values.input);
+    }
+  };
+
+  const onCloseHandler = (): void => {
+    setValues({
+      error: false,
+      input: "",
+    });
+    handleCloseModal();
+  };
+
   return (
-    <Modal open={opened} onClose={handleCloseModal}>
+    <Modal open={opened} onClose={onCloseHandler}>
       <Box sx={style}>
         <Typography
           id="modal-modal-title"
@@ -108,6 +143,8 @@ function SimpleModal({
           {header}
         </Typography>
         <TextField
+          error={values.error}
+          helperText={values.error ? "Incorrect entry." : ""}
           autoComplete="off"
           sx={textFieldSx}
           id="outlined-basic"
@@ -119,15 +156,10 @@ function SimpleModal({
           placeholder="https://www.youtube.com/watch?v=4WXs3sKu41I"
         />
         <Box sx={buttonContainer}>
-          <Button
-            sx={confirmButtonSx}
-            onClick={() => {
-              handleSubmit(values.input);
-            }}
-          >
+          <Button sx={confirmButtonSx} onClick={submitHandler}>
             SUBMIT
           </Button>
-          <Button sx={cancelButtonSx} onClick={handleCloseModal}>
+          <Button sx={cancelButtonSx} onClick={onCloseHandler}>
             CANCEL
           </Button>
         </Box>
