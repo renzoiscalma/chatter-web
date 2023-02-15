@@ -66,7 +66,7 @@ const mutationResolver = {
           populate: { path: "currentUsers" },
         },
       ]);
-
+      // use lobby params for efficiency
       await pubsub.publish(MESSAGE_ADDED_TOPIC, {
         messageAdded: {
           lobbyId: newMessage.get("to")?._id,
@@ -145,7 +145,8 @@ const mutationResolver = {
         return null;
       });
       await res?.populate("currentUsers");
-      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
@@ -153,6 +154,7 @@ const mutationResolver = {
           data: res?.currentUsers,
         },
       });
+
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
@@ -169,7 +171,8 @@ const mutationResolver = {
         return null;
       });
       await res?.populate("currentUsers");
-      pubsub.publish(USER_LIST_UPDATED_TOPIC, {
+
+      await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,

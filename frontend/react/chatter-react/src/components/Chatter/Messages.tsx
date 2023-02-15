@@ -163,18 +163,28 @@ function Messages({ messages, children }: MessageProps): JSX.Element {
     };
   };
 
+  const messageType2Sx: SxProps = {
+    color: theme.common.text.secondary,
+    fontSize: "10px",
+    margin: "10px auto 10px auto",
+  };
+
   return (
     <StrictMode>
       <Box sx={messagesContainer}>
         {messages ? (
-          messages.map((value: Message, index: number, messages: Message[]) => (
-            <React.Fragment key={value.date?.getTime()}>
-              <Box sx={getNameStyle(value)}>{value.senderUsername}</Box>
-              <Paper sx={getMessageBubbleStyle(value, index, messages)}>
-                {value.message} {generateMessageStatus(value)}
-              </Paper>
-            </React.Fragment>
-          ))
+          messages.map((value: Message, index: number, messages: Message[]) => {
+            return value.sendType === 1 ? (
+              <React.Fragment key={value.date?.getTime()}>
+                <Box sx={getNameStyle(value)}>{value.senderUsername}</Box>
+                <Paper sx={getMessageBubbleStyle(value, index, messages)}>
+                  {value.message} {generateMessageStatus(value)}
+                </Paper>
+              </React.Fragment>
+            ) : (
+              <Box sx={messageType2Sx}>{value.message}</Box>
+            );
+          })
         ) : (
           <>
             <i>crickets</i>

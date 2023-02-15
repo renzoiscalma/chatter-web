@@ -7,7 +7,7 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Lobby from "./components/Chatter/interface/Lobby";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
 import UpdateVideoStatusRequest from "./components/Chatter/interface/requests/UpdateVideoStatusRequest";
@@ -47,7 +47,7 @@ function App(): JSX.Element {
   const [userCookie, setUserCookie] = useCookies(["user-cookie"]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [lobbyModal, setLobbyModal] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   // TODO ADD PROPER TYPES
   const [newUserMutation, newUserMutationRes]: MutationTuple<
     { addNewUser: AddNewUserResponse },
@@ -175,6 +175,13 @@ function App(): JSX.Element {
       const { id } = createLobbyMutationRes.data.createLobby;
       setLobbyId(id);
       handleCloseModal();
+      navigate("/?lobbyId=" + id);
+      addUserToLobbyMutation({
+        variables: {
+          lobbyId: id,
+          userId,
+        },
+      });
     }
   }, [createLobbyMutationRes.data]);
 

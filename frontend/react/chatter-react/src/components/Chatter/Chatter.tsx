@@ -69,6 +69,7 @@ function sendMessageReducer(
           senderUsername: message.from.username,
           to: "Lobby",
           sendStatus: SendStatus.SENT,
+          sendType: 1,
         };
       });
     case SendStatus.FAILED:
@@ -194,7 +195,7 @@ function Chatter(props: ChatterProps) {
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
-  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<String[]>([]);
+  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<string[]>([]);
 
   const handleSendMessage = (message: string) => {
     const messageStatusIndex: number = messages.length;
@@ -260,6 +261,7 @@ function Chatter(props: ChatterProps) {
           sender: value.from.id,
           senderUsername: value.from.username,
           date: new Date(String(value.date)),
+          sendType: 1,
         })),
       });
   }, [newMessageSub]);
@@ -267,9 +269,50 @@ function Chatter(props: ChatterProps) {
   useEffect(() => {
     if (userListChangedSub.data?.userListChanged) {
       let { data } = userListChangedSub.data.userListChanged;
-      setCurrentLobbyUsers(data.map((value) => value.username));
+      let dataLobbyUsers = data.map((value) => value.username);
+      let newUser = dataLobbyUsers.filter(
+        (user) => !currentLobbyUsers.includes(user)
+      );
+      let userLeft = currentLobbyUsers.filter(
+        (user) => !dataLobbyUsers.includes(user)
+      );
+      setCurrentLobbyUsers(dataLobbyUsers);
+
+      if (newUser[0] && newUser[0] !== userContext.username) {
+        dispatchMessageEnteredLobby(newUser[0]);
+      } else if (userLeft[0] && newUser[0] !== userContext.username) {
+        dispatchMessageLeftLobby(userLeft[0]);
+      }
     }
   }, [userListChangedSub]);
+
+  const dispatchMessageEnteredLobby = (user: string): void => {
+    dispatchMessage({
+      type: "NEW_MESSAGE",
+      payload: [
+        {
+          message: `${user} has entered the lobby.`,
+          sender: "Admin",
+          to: "Everyone",
+          sendType: -1,
+        },
+      ],
+    });
+  };
+
+  const dispatchMessageLeftLobby = (user: string): void => {
+    dispatchMessage({
+      type: "NEW_MESSAGE",
+      payload: [
+        {
+          message: `${user} has left the lobby.`,
+          sender: "Admin",
+          to: "Everyone",
+          sendType: -1,
+        },
+      ],
+    });
+  };
 
   useEffect(() => {
     if (usernameChangedSub?.data?.usernameChanged) {
