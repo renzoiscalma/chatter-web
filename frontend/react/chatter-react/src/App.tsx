@@ -97,6 +97,14 @@ function App(): JSX.Element {
 
   const handleSetUsername = (username: string) => {
     setUsername(username);
+    setUserCookie(
+      "user-cookie",
+      { userId: userId, username },
+      {
+        path: "/",
+        expires: new Date("11-10-2023"),
+      }
+    );
   };
 
   const handleCloseModal = () => {

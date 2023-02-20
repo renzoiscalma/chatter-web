@@ -10,7 +10,7 @@ export const CHANGE_USERNAME = gql`
 `;
 
 export const VALIDATE_USERNAME = gql`
-  query validateUsername($username: string!) {
+  mutation validateUsername($username: String!) {
     validateUsername(username: $username) {
       code
       success
