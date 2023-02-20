@@ -11,10 +11,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { MouseEvent, useContext, useState } from "react";
 import { UsrContxt } from "../../App";
-import { validateYtUrl } from "../../util/helpers";
 import ChangeUsernameModal from "../Modals/ChangeUsernameModal";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
-import SimpleModal from "../Modals/SimpleModal";
+import ChangeVideoModal from "../Modals/SimpleModal";
 import NavBarMenu from "./NavBarMenu";
 
 function Navbar(): JSX.Element {
@@ -106,15 +105,11 @@ function Navbar(): JSX.Element {
           setShareLobbyModal(false);
         }}
       />
-      <SimpleModal
+      <ChangeVideoModal
         opened={changeVideoModal}
         handleCloseModal={() => {
           setChangeVideoModal(false);
         }}
-        handleSubmit={handleChangeVideo}
-        header={"Input New Video Url"}
-        placeholder={"URL"}
-        validation={validateYtUrl}
       />
       <ChangeUsernameModal // just separate this lol, then make reusable comopnents
         opened={usernameModal}

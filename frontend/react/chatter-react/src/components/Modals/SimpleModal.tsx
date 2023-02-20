@@ -1,18 +1,15 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { SxProps, useTheme } from "@mui/material/styles";
-import { KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useContext, useState } from "react";
+import { UsrContxt } from "../../App";
+import { validateYtUrl } from "../../util/helpers";
 import OutlinedField from "../InputField/OutlinedField";
 import ModalBase from "./ModalBase";
 
-interface ModalProps {
+interface ChangeVideoModalProps {
   opened: boolean;
   handleCloseModal(): void;
-  handleSubmit(input: string): void;
-  header: string;
-  placeholder: string;
-  initialValue?: string;
-  validation?(input: string): boolean;
 }
 
 interface InputState {
@@ -24,16 +21,12 @@ interface InputState {
  *  A generic modal that contains a SINGLE text input, a confirm and a cancel button.
  * does not support validation from backend.
  **/
-function SimpleModal({
+function ChangeVideoModal({
   opened,
   handleCloseModal,
-  handleSubmit,
-  header,
-  placeholder,
-  initialValue,
-  validation,
-}: ModalProps): JSX.Element {
+}: ChangeVideoModalProps): JSX.Element {
   const theme = useTheme();
+  const userContext = useContext(UsrContxt);
 
   const confirmButtonSx: SxProps = {
     flexGrow: 1,
@@ -58,7 +51,7 @@ function SimpleModal({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter" && values.input !== "") {
-      handleSubmit(values.input);
+      handleSubmit();
     }
   };
 
@@ -72,15 +65,12 @@ function SimpleModal({
       }));
     };
 
-  const submitHandler = (): void => {
-    if (validation) {
-      if (validation(values.input)) {
-        handleSubmit(values.input);
-      } else {
-        setValues((values) => ({ ...values, error: true }));
-      }
+  const handleSubmit = (): void => {
+    if (validateYtUrl(values.input)) {
+      userContext.setVideo(values.input);
+      handleCloseModal();
     } else {
-      handleSubmit(values.input);
+      setValues((values) => ({ ...values, error: true }));
     }
   };
 
@@ -93,20 +83,24 @@ function SimpleModal({
   };
 
   return (
-    <ModalBase open={opened} onClose={onCloseHandler} header="Header">
+    <ModalBase
+      open={opened}
+      onClose={onCloseHandler}
+      header="Input New Video Url"
+    >
       <OutlinedField
         error={values.error}
         helperText={values.error ? "Incorrect entry." : ""}
         autoComplete="off"
         id="outlined-basic"
-        label={placeholder}
+        label={"Youtube Url"}
         onChange={handleChange("input")}
         onKeyDown={handleKeyDown}
-        defaultValue={initialValue}
+        defaultValue={userContext.videoUrl}
         placeholder="https://www.youtube.com/watch?v=4WXs3sKu41I"
       />
       <Box sx={buttonContainer}>
-        <Button sx={confirmButtonSx} onClick={submitHandler}>
+        <Button sx={confirmButtonSx} onClick={handleSubmit}>
           SUBMIT
         </Button>
         <Button sx={cancelButtonSx} onClick={onCloseHandler}>
@@ -117,4 +111,4 @@ function SimpleModal({
   );
 }
 
-export default SimpleModal;
+export default ChangeVideoModal;
