@@ -254,6 +254,30 @@ const mutationResolver = {
         success: !!videoStatus,
       };
     },
+    validateUsername: async (
+      _: any,
+      { username }: { username: string },
+      ___: any,
+      ____: any
+    ) => {
+      if (!username) return null;
+      let err = false,
+        invalidUser = false;
+      const usernameFilter = { username };
+      if (username.length > 35) {
+        invalidUser = true;
+      }
+      const user = await UserCollection.findOne(usernameFilter).catch((err) => {
+        console.error("ValidateUsername Error!", err);
+        err = true;
+        return null;
+      });
+      return {
+        code: err ? 500 : 200,
+        success: err ? 500 : 200,
+        valid: !Boolean(user) && !invalidUser,
+      };
+    },
   },
 };
 

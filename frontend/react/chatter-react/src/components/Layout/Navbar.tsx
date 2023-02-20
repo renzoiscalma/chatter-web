@@ -1,4 +1,3 @@
-import { MutationTuple, useMutation } from "@apollo/client";
 import ClickAwayListener from "@mui/base/ClickAwayListener";
 import ReplyIcon from "@mui/icons-material/Reply";
 import Settings from "@mui/icons-material/Settings";
@@ -10,12 +9,10 @@ import IconButton from "@mui/material/IconButton";
 import { SxProps, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext, useState } from "react";
 import { UsrContxt } from "../../App";
-import { CHANGE_USERNAME } from "../../queries/MessageBar";
-import { validateUsername, validateYtUrl } from "../../util/helpers";
-import ChangeUsernameRequest from "../Chatter/interface/requests/ChangeUsernameRequest";
-import GenericResponse from "../Chatter/interface/response/GenericResponse";
+import { validateYtUrl } from "../../util/helpers";
+import ChangeUsernameModal from "../Modals/ChangeUsernameModal";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
 import SimpleModal from "../Modals/SimpleModal";
 import NavBarMenu from "./NavBarMenu";
@@ -27,11 +24,6 @@ function Navbar(): JSX.Element {
   const [usernameModal, setUsernameModal] = useState<boolean>(false);
   const userContext = useContext(UsrContxt);
   const theme = useTheme();
-
-  const [usernameUrlMutation, usernameUrlMutationProps]: MutationTuple<
-    { changeUsername: GenericResponse },
-    ChangeUsernameRequest
-  > = useMutation(CHANGE_USERNAME);
 
   const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
     if (menuEl) setMenuEl(null);
@@ -56,16 +48,6 @@ function Navbar(): JSX.Element {
     setShareLobbyModal(true);
   };
 
-  const handleChangeUsername = (newUsername: string): void => {
-    userContext.setUsername(newUsername);
-    usernameUrlMutation({
-      variables: {
-        userId: userContext.userId,
-        newUsername: newUsername,
-      },
-    });
-  };
-
   const handleChangeVideo = (newVideoUrl: string): void => {
     userContext.setVideo(newVideoUrl);
     setChangeVideoModal(false);
@@ -88,13 +70,6 @@ function Navbar(): JSX.Element {
     margin: "0",
     padding: "0 10px",
   };
-
-  useEffect(() => {
-    if (!usernameUrlMutationProps.error) {
-      setUsernameModal(false);
-      handleMenuClose();
-    } else console.log("something went wrong with updating your username");
-  }, [usernameUrlMutationProps.data, usernameUrlMutationProps.error]);
 
   return (
     <AppBar position="static" sx={appBarStyle}>
@@ -141,16 +116,11 @@ function Navbar(): JSX.Element {
         placeholder={"URL"}
         validation={validateYtUrl}
       />
-      <SimpleModal
+      <ChangeUsernameModal // just separate this lol, then make reusable comopnents
         opened={usernameModal}
-        handleCloseModal={() => {
+        onClose={() => {
           setUsernameModal(false);
         }}
-        handleSubmit={handleChangeUsername}
-        header={"Input New Username"}
-        placeholder={"Username"}
-        initialValue={userContext.username}
-        validation={validateUsername}
       />
     </AppBar>
   );
