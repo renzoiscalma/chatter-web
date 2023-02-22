@@ -1,9 +1,10 @@
-import { Document, Types } from "mongoose";
+import { Document, PopulatedDoc, Types } from "mongoose";
 import LobbyCollection from "../db/interface/LobbySchema";
 import MessageCollection from "../db/interface/MessageSchema";
 import UserCollection from "../db/interface/UserSchema";
 import VideoCollection from "../db/interface/VideoSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
+import { User } from "../models/User";
 import { pubsub } from "../redis";
 import {
   MESSAGE_ADDED_TOPIC,
@@ -116,6 +117,8 @@ const mutationResolver = {
         new: true,
       });
 
+      const lobbyFilter = { currentUsers: args.userId };
+      const lobbyRes = await LobbyCollection.find(lobbyFilter);
       await pubsub.publish(USERNAME_CHANGED_TOPIC, {
         lobbyId: args.lobbyId,
         usernameChanged: {
@@ -125,7 +128,7 @@ const mutationResolver = {
             id: args.userId,
             username: args.newUsername,
           },
-          lobbies: ["633c71d566f605851babba3e"], // TODO SCRAPE LOBBIES
+          lobbies: lobbyRes.map((lobby) => lobby.id), // TODO SCRAPE LOBBIES
         },
       });
 
@@ -140,20 +143,24 @@ const mutationResolver = {
       const update = { $addToSet: { currentUsers: args.userId } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
-      }).catch((err) => {
-        console.error("Add User Err", err);
-        return null;
-      });
-      await res?.populate("currentUsers");
+      })
+        .populate("currentUsers")
+        .catch((err) => {
+          console.error("Add User Err", err);
+          return null;
+        });
 
       await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
           success: Boolean(res),
-          data: res?.currentUsers,
+          data: res?.currentUsers.map((data: PopulatedDoc<User & Document>) =>
+            data.toJSON({ virtuals: true })
+          ),
         },
       });
+
       return {
         code: res ? 200 : 500,
         success: res ? true : false,
@@ -165,18 +172,21 @@ const mutationResolver = {
       const update = { $pullAll: { currentUsers: [args.userId] } };
       const res = await LobbyCollection.findOneAndUpdate(filter, update, {
         new: true,
-      }).catch((err) => {
-        console.error("RemoveUserToLobbyError", err, args);
-        return null;
-      });
-      await res?.populate("currentUsers");
+      })
+        .populate("currentUsers")
+        .catch((err) => {
+          console.error("RemoveUserToLobbyError", err, args);
+          return null;
+        });
 
       await pubsub.publish(USER_LIST_UPDATED_TOPIC, {
         lobbyId: args.lobbyId,
         userListChanged: {
           code: res ? 200 : 500,
           success: Boolean(res),
-          data: res?.currentUsers,
+          data: res?.currentUsers.map((data: PopulatedDoc<User & Document>) =>
+            data.toJSON({ virtuals: true })
+          ),
         },
       });
       return {

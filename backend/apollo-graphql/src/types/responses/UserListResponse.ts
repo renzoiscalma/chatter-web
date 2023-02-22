@@ -4,7 +4,7 @@ const UserListResponse = gql`
   type UserListResponse {
     code: Int!
     success: Boolean!
-    data: [User!]
+    data: [User]
   }
 `;
 

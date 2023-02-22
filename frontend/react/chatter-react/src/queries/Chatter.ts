@@ -56,6 +56,7 @@ export const USER_LIST_CHANGED_SUBSCRIPTION = gql`
       code
       success
       data {
+        id
         username
       }
     }

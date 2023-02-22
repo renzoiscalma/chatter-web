@@ -130,7 +130,7 @@ function Chatter(props: ChatterProps) {
   const getCurrentUsersOnLobby: QueryResult<
     {
       getCurrentUsersOnLobby: GenericResponse & {
-        data: Array<{ username: string }>;
+        data: Array<{ username: string; id: string }>;
       };
     },
     {
@@ -156,7 +156,7 @@ function Chatter(props: ChatterProps) {
   const userListChangedSub: SubscriptionResult<
     {
       userListChanged: GenericResponse & {
-        data: Array<{ username: string }>;
+        data: Array<{ username: string; id: string }>;
       };
     },
     { lobbyId: string }
@@ -195,7 +195,9 @@ function Chatter(props: ChatterProps) {
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
-  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<string[]>([]);
+  const [currentLobbyUsers, setCurrentLobbyUsers] = useState<
+    Array<{ username: string; id: string }>
+  >([]);
 
   const handleSendMessage = (message: string) => {
     const messageStatusIndex: number = messages.length;
@@ -252,7 +254,7 @@ function Chatter(props: ChatterProps) {
   useEffect(() => {
     if (getCurrentUsersOnLobby?.data) {
       let { data } = getCurrentUsersOnLobby.data.getCurrentUsersOnLobby;
-      setCurrentLobbyUsers(data.map((value) => value.username));
+      setCurrentLobbyUsers(data);
     }
   }, [getCurrentUsersOnLobby.data]);
 
@@ -274,19 +276,19 @@ function Chatter(props: ChatterProps) {
   useEffect(() => {
     if (userListChangedSub.data?.userListChanged) {
       let { data } = userListChangedSub.data.userListChanged;
-      let dataLobbyUsers = data.map((value) => value.username);
-      let newUser = dataLobbyUsers.filter(
-        (user) => !currentLobbyUsers.includes(user)
+      // let dataLobbyUsers = data.map((value) => value.username);
+      let newUser = data.filter(
+        (lobbyUser) =>
+          !currentLobbyUsers.some((cLobbyUser) => lobbyUser.id == cLobbyUser.id)
       );
       let userLeft = currentLobbyUsers.filter(
-        (user) => !dataLobbyUsers.includes(user)
+        (cLobbyUser) => !data.some((dataUser) => dataUser.id == cLobbyUser.id)
       );
-      setCurrentLobbyUsers(dataLobbyUsers);
-
-      if (newUser[0] && newUser[0] !== userContext.username) {
-        dispatchMessageEnteredLobby(newUser[0]);
-      } else if (userLeft[0] && newUser[0] !== userContext.username) {
-        dispatchMessageLeftLobby(userLeft[0]);
+      setCurrentLobbyUsers(data);
+      if (newUser[0] && newUser[0].username !== userContext.username) {
+        dispatchMessageEnteredLobby(newUser[0].username);
+      } else if (userLeft[0] && userLeft[0].username !== userContext.username) {
+        dispatchMessageLeftLobby(userLeft[0].username);
       }
     }
   }, [userListChangedSub]);
@@ -321,10 +323,18 @@ function Chatter(props: ChatterProps) {
 
   useEffect(() => {
     if (usernameChangedSub?.data?.usernameChanged) {
+      const { id, username } = usernameChangedSub.data?.usernameChanged.data;
+      // modify messages to account change of name
       dispatchMessage({
         type: "USERNAME_CHANGED",
         payload: usernameChangedSub.data.usernameChanged.data,
       });
+      // modify user with the new username
+      setCurrentLobbyUsers((currentUsers) =>
+        currentUsers.map((user) =>
+          user.id === id ? { ...user, username: username } : user
+        )
+      );
     }
   }, [usernameChangedSub.data]);
 

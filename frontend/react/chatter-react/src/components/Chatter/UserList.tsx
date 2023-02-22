@@ -19,7 +19,7 @@ const userContainer: SxProps = {
 };
 
 interface UserList {
-  users: String[];
+  users: Array<{ username: string; id: string }>;
 }
 function UserList({ users }: UserList): JSX.Element {
   const theme = useTheme();
@@ -41,9 +41,9 @@ function UserList({ users }: UserList): JSX.Element {
       <Box sx={lobbyListContainer}>
         {users ? (
           users.map((user) => (
-            <Box sx={userContainer}>
+            <Box sx={userContainer} key={user.id}>
               <AccountCircleIcon sx={userIcon} />
-              <Typography sx={nameStyle}>{user}</Typography>
+              <Typography sx={nameStyle}>{user.username}</Typography>
             </Box>
           ))
         ) : (
