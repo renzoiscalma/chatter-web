@@ -116,6 +116,8 @@ const mutationResolver = {
         new: true,
       });
 
+      const lobbyFilter = { currentUsers: args.userId };
+      const lobbyRes = await LobbyCollection.find(lobbyFilter);
       await pubsub.publish(USERNAME_CHANGED_TOPIC, {
         lobbyId: args.lobbyId,
         usernameChanged: {
@@ -125,7 +127,7 @@ const mutationResolver = {
             id: args.userId,
             username: args.newUsername,
           },
-          lobbies: ["633c71d566f605851babba3e"], // TODO SCRAPE LOBBIES
+          lobbies: lobbyRes.map((lobby) => lobby.id), // TODO SCRAPE LOBBIES
         },
       });
 

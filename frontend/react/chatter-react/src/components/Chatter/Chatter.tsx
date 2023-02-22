@@ -321,6 +321,7 @@ function Chatter(props: ChatterProps) {
 
   useEffect(() => {
     if (usernameChangedSub?.data?.usernameChanged) {
+      console.log("username changed");
       dispatchMessage({
         type: "USERNAME_CHANGED",
         payload: usernameChangedSub.data.usernameChanged.data,
