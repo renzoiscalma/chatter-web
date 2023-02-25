@@ -223,7 +223,6 @@ function Video(): JSX.Element {
 
   // required whenever creating lobby.
   useEffect(() => {
-    console.log(userContext.videoUrl);
     if (userContext.videoUrl)
       setPlayerProps((val) => ({
         ...val,
