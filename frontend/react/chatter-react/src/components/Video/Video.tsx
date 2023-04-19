@@ -109,7 +109,6 @@ function Video(): JSX.Element {
         },
       },
     });
-    console.log("play handler", +playerRef.current.getCurrentTime().toFixed(0));
   };
 
   const onPauseHandler = (param: any): void => {
@@ -129,7 +128,6 @@ function Video(): JSX.Element {
         },
       },
     });
-    console.log("pause handler");
   };
 
   const getPlayerState = (eventData: number): PlayerState => {
@@ -214,8 +212,6 @@ function Video(): JSX.Element {
         pip: false,
         loop: false,
       }));
-
-      console.log(data);
     }
   }, [videoStatus.data]);
 
