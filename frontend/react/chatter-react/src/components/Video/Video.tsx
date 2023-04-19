@@ -92,16 +92,6 @@ function Video(): JSX.Element {
     },
   };
 
-  const onReadyHandler = (): void => {
-    setTimeout(() => {
-      setPlayerProps((val) => ({
-        ...val,
-        muted: false,
-        playing: false,
-      }));
-    }, 500);
-  };
-
   const onPlayHandler = (): void => {
     const { lobbyId, userId } = userContext;
     if (!playerRef.current) return;
@@ -168,6 +158,14 @@ function Video(): JSX.Element {
         }));
       }
 
+      if (
+        currTime > 0 &&
+        playerRef.current &&
+        currTime - +playerRef.current.getCurrentTime().toFixed(0) != 0 // do seek when player difference from BE is not 0
+      ) {
+        playerRef.current?.seekTo(currTime);
+      }
+
       switch (getPlayerState(status)) {
         case PlayerState.PLAYING:
           setPlayerProps((values) => ({
@@ -192,7 +190,6 @@ function Video(): JSX.Element {
   useEffect(() => {
     setPlayerProps((values) => ({
       ...values,
-      onReady: onReadyHandler,
       onPlay: onPlayHandler,
       onPause: onPauseHandler,
     }));
@@ -201,6 +198,11 @@ function Video(): JSX.Element {
   useEffect(() => {
     if (videoStatus.data) {
       const { data } = videoStatus.data.getVideoStatusOnLobby;
+
+      if (data.currTime > 0) {
+        playerRef.current?.seekTo(data.currTime);
+      }
+
       setPlayerProps((val) => ({
         ...val,
         url: data.url,
@@ -223,7 +225,6 @@ function Video(): JSX.Element {
 
   // required whenever creating lobby.
   useEffect(() => {
-    console.log(userContext.videoUrl);
     if (userContext.videoUrl)
       setPlayerProps((val) => ({
         ...val,

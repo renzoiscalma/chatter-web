@@ -96,7 +96,6 @@ const LobbyModal = ({
   };
 
   const onCloseHandler = (_: object, reason: string) => {
-    console.log(reason);
     if (reason !== "backdropClick" && reason !== "escapeKeyDown")
       handleCloseModal();
   };

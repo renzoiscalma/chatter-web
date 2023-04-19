@@ -193,7 +193,9 @@ function Chatter(props: ChatterProps) {
     initialMessages
   );
 
-  const [initialized, setInitialized] = useState<boolean>(false);
+  const [initializedMessage, setInitializedMessage] = useState<boolean>(false);
+  const [initializedLobbyList, setInitializedLobbyList] =
+    useState<boolean>(false);
   const [showLobbyUsers, setShowLobbyUsers] = useState<boolean>(false);
   const [currentLobbyUsers, setCurrentLobbyUsers] = useState<
     Array<{ username: string; id: string }>
@@ -228,14 +230,17 @@ function Chatter(props: ChatterProps) {
   }, [messages, showLobbyUsers, props.chatHidden]);
 
   useEffect(() => {
-    if (!initialized && existingMessages.data?.getMessagesOnLobby?.success) {
-      setInitialized(true);
+    if (
+      !initializedMessage &&
+      existingMessages.data?.getMessagesOnLobby?.success
+    ) {
+      setInitializedMessage(true);
       dispatchMessage({
         type: "FETCH_ALL",
         payload: existingMessages.data.getMessagesOnLobby.data,
       });
     }
-  }, [initialized, existingMessages.data]);
+  }, [initializedMessage, existingMessages.data]);
 
   useEffect(() => {
     if (sendMessageProperties?.data) {
@@ -276,7 +281,13 @@ function Chatter(props: ChatterProps) {
   useEffect(() => {
     if (userListChangedSub.data?.userListChanged) {
       let { data } = userListChangedSub.data.userListChanged;
-      // let dataLobbyUsers = data.map((value) => value.username);
+
+      if (!initializedLobbyList) {
+        setInitializedLobbyList(true);
+        setCurrentLobbyUsers(data);
+        return;
+      }
+
       let newUser = data.filter(
         (lobbyUser) =>
           !currentLobbyUsers.some((cLobbyUser) => lobbyUser.id == cLobbyUser.id)
@@ -284,7 +295,9 @@ function Chatter(props: ChatterProps) {
       let userLeft = currentLobbyUsers.filter(
         (cLobbyUser) => !data.some((dataUser) => dataUser.id == cLobbyUser.id)
       );
+
       setCurrentLobbyUsers(data);
+
       if (newUser[0] && newUser[0].username !== userContext.username) {
         dispatchMessageEnteredLobby(newUser[0].username);
       } else if (userLeft[0] && userLeft[0].username !== userContext.username) {
