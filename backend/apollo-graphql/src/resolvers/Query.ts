@@ -46,11 +46,13 @@ export const queryResolver = {
             code: 200,
             success: true,
             isExisting: true,
+            lobbyId: args.lobbyId,
           }
         : {
             code: 200,
             success: false,
             isExisting: false,
+            lobbyId: args.lobbyId,
           };
     },
     getVideoStatusOnLobby: async (_: any, { lobbyId }: any) => {

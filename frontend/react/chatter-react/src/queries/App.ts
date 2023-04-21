@@ -19,6 +19,7 @@ export const IS_LOBBY_EXISTING = gql`
       code
       success
       isExisting
+      lobbyId
     }
   }
 `;

@@ -1,17 +1,20 @@
 import ClickAwayListener from "@mui/base/ClickAwayListener";
-import ReplyIcon from "@mui/icons-material/Reply";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import Settings from "@mui/icons-material/Settings";
-import { Button } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import { Tooltip } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
-import { SxProps, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { MouseEvent, useContext, useState } from "react";
+import { SxProps, useTheme } from "@mui/material/styles";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
+import { NONE_LOBBY_ID } from "../../util/constants";
 import ChangeUsernameModal from "../Modals/ChangeUsernameModal";
+import CreateLobbyModal from "../Modals/CreateLobbyModal";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
 import ChangeVideoModal from "../Modals/SimpleModal";
 import NavBarMenu from "./NavBarMenu";
@@ -20,6 +23,7 @@ function Navbar(): JSX.Element {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [changeVideoModal, setChangeVideoModal] = useState<boolean>(false);
   const [shareLobbyModal, setShareLobbyModal] = useState<boolean>(false);
+  const [createLobbyModal, setCreateLobbyModal] = useState<boolean>(false);
   const [usernameModal, setUsernameModal] = useState<boolean>(false);
   const userContext = useContext(UsrContxt);
   const theme = useTheme();
@@ -44,22 +48,21 @@ function Navbar(): JSX.Element {
   };
 
   const openShareLobbyModal = (): void => {
+    handleMenuClose();
     setShareLobbyModal(true);
   };
 
-  const handleChangeVideo = (newVideoUrl: string): void => {
-    userContext.setVideo(newVideoUrl);
-    setChangeVideoModal(false);
+  const openCreateLobbyModal = (): void => {
+    setCreateLobbyModal(true);
   };
 
-  const shareBtnSx: SxProps = {
-    color: theme.common.text.primary,
-    marginRight: "24px",
-    backgroundColor: "#ED6A5A",
-    "&:hover": {
-      backgroundColor: "#ED6A5A",
-    },
-  };
+  useEffect(() => {
+    if (userContext.lobbyId === NONE_LOBBY_ID) {
+      openCreateLobbyModal();
+    } else {
+      setCreateLobbyModal(false);
+    }
+  }, [userContext]);
 
   const appBarStyle: SxProps = {
     bgcolor: theme.appBar.bgColor,
@@ -75,18 +78,30 @@ function Navbar(): JSX.Element {
       <Container sx={containerSx} maxWidth={false}>
         <Toolbar disableGutters>
           <Typography sx={{ flexGrow: 1 }}>chatter</Typography>
-          <Button
-            variant="contained"
-            sx={shareBtnSx}
-            onClick={openShareLobbyModal}
-            startIcon={<ReplyIcon />}
+          <IconButton
+            size="large"
+            onClick={openCreateLobbyModal}
+            color="inherit"
           >
-            SHARE LOBBY
-          </Button>
+            <Tooltip title="Create a new lobby" placement="bottom">
+              <PostAddIcon />
+            </Tooltip>
+          </IconButton>
+          <IconButton
+            size="large"
+            onClick={openShareLobbyModal}
+            color="inherit"
+          >
+            <Tooltip title="Share this lobby" placement="bottom">
+              <ShareIcon />
+            </Tooltip>
+          </IconButton>
           <ClickAwayListener onClickAway={handleMenuClose}>
             <Box sx={{ flexGrow: 0 }}>
               <IconButton size="large" onClick={handleMenuOpen} color="inherit">
-                <Settings />
+                <Tooltip title="Settings" placement="bottom">
+                  <Settings />
+                </Tooltip>
               </IconButton>
               <NavBarMenu
                 menuEl={menuEl}
@@ -98,6 +113,12 @@ function Navbar(): JSX.Element {
           </ClickAwayListener>
         </Toolbar>
       </Container>
+      <CreateLobbyModal
+        opened={createLobbyModal}
+        handleCloseModal={() => {
+          setCreateLobbyModal(false);
+        }}
+      />
       <ShareLobbyModal
         lobbyUrl={`${process.env.REACT_APP_URI}?lobbyId=${userContext.lobbyId}`}
         opened={shareLobbyModal}
@@ -111,7 +132,7 @@ function Navbar(): JSX.Element {
           setChangeVideoModal(false);
         }}
       />
-      <ChangeUsernameModal // just separate this lol, then make reusable comopnents
+      <ChangeUsernameModal
         opened={usernameModal}
         onClose={() => {
           setUsernameModal(false);

@@ -7,25 +7,23 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Lobby from "./components/Chatter/interface/Lobby";
+import { useSearchParams } from "react-router-dom";
+import UserContext from "./components/Chatter/interface/UserContext";
 import IsLobbyExistingRequest from "./components/Chatter/interface/requests/IsLobbyExistingRequest";
 import UpdateVideoStatusRequest from "./components/Chatter/interface/requests/UpdateVideoStatusRequest";
 import AddNewUserResponse from "./components/Chatter/interface/response/AddNewUserResponse";
 import GenericResponse from "./components/Chatter/interface/response/GenericResponse";
 import IsLobbyExistingResponse from "./components/Chatter/interface/response/IsLobbyExistingResponse";
-import UserContext from "./components/Chatter/interface/UserContext";
 import Layout from "./components/Layout/Layout";
-import LobbyModal from "./components/Modals/LobbyModal";
 import {
   ADD_NEW_USER,
   ADD_USER_TO_LOBBY,
-  CREATE_LOBBY,
   IS_LOBBY_EXISTING,
   REMOVE_USER_TO_LOBBY,
 } from "./queries/App";
 import { UPDATE_VIDEO } from "./queries/Video";
 import { darkTheme, lightTheme } from "./theme";
+import { NONE_LOBBY_ID } from "./util/constants";
 
 export const UsrContxt = createContext<UserContext>({
   username: "",
@@ -34,6 +32,7 @@ export const UsrContxt = createContext<UserContext>({
   videoUrl: "",
   darkMode: true,
   setUsername: () => {},
+  setLobbyId: () => {},
   darkModeToggle: () => {},
   setVideo: () => {},
 });
@@ -46,8 +45,6 @@ function App(): JSX.Element {
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [userCookie, setUserCookie] = useCookies(["user-cookie"]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [lobbyModal, setLobbyModal] = useState<boolean>(false);
-  const navigate = useNavigate();
   // TODO ADD PROPER TYPES
   const [newUserMutation, newUserMutationRes]: MutationTuple<
     { addNewUser: AddNewUserResponse },
@@ -66,11 +63,6 @@ function App(): JSX.Element {
     { lobbyId: string; userId: string }
   > = useMutation(REMOVE_USER_TO_LOBBY);
 
-  const [createLobbyMutation, createLobbyMutationRes]: MutationTuple<
-    { createLobby: Lobby },
-    { videoUrl: string }
-  > = useMutation(CREATE_LOBBY);
-
   const [isLobbyExisting, isLobbyExistingRes]: LazyQueryResultTuple<
     { isLobbyExisting: IsLobbyExistingResponse },
     IsLobbyExistingRequest
@@ -81,18 +73,12 @@ function App(): JSX.Element {
     { statusInput: UpdateVideoStatusRequest }
   > = useMutation(UPDATE_VIDEO);
 
-  const createLobby = (videoUrl: string) => {
-    // TODO add 1 second delay, loading = true modal should have a spinner inside
-    createLobbyMutation({
-      variables: {
-        videoUrl: videoUrl,
-      },
-    });
+  const handleSetVideo = (videoUrl: string) => {
     setVideoUrl(videoUrl);
   };
 
-  const handleSetVideo = (videoUrl: string) => {
-    setVideoUrl(videoUrl);
+  const handleSetLobbyId = (lobbyId: string) => {
+    setLobbyId(lobbyId);
   };
 
   const handleSetUsername = (username: string) => {
@@ -107,15 +93,12 @@ function App(): JSX.Element {
     );
   };
 
-  const handleCloseModal = () => {
-    setLobbyModal(false);
-  };
-
   const handleDarkModeToggle = () => {
     setDarkMode((val) => !val);
   };
 
   const handleBeforeUnload = (): void => {
+    console.log("ASKLDJASD");
     removeUserToLobbyMutation({
       variables: {
         lobbyId,
@@ -141,12 +124,12 @@ function App(): JSX.Element {
         },
       });
     } else {
-      setLobbyModal(true);
+      setLobbyId(NONE_LOBBY_ID);
     }
   }, []);
 
   useEffect(() => {
-    if (lobbyId)
+    if (lobbyId && lobbyId !== NONE_LOBBY_ID)
       videoUrlMutation({
         variables: {
           statusInput: {
@@ -179,38 +162,18 @@ function App(): JSX.Element {
   }, [newUserMutationRes.data]);
 
   useEffect(() => {
-    if (createLobbyMutationRes.data) {
-      const { id } = createLobbyMutationRes.data.createLobby;
-      setLobbyId(id);
-      handleCloseModal();
-      navigate("/?lobbyId=" + id);
-      addUserToLobbyMutation({
-        variables: {
-          lobbyId: id,
-          userId,
-        },
-      });
-    }
-  }, [createLobbyMutationRes.data]);
-
-  useEffect(() => {
-    if (!isLobbyExistingRes.called || isLobbyExistingRes.loading) return;
-    const lobbyId = searchParams.get("lobbyId") || "";
     if (
+      userId &&
       isLobbyExistingRes.data &&
       isLobbyExistingRes.data.isLobbyExisting.isExisting
     ) {
-      setLobbyId(lobbyId);
-      // add user to lobby BE
+      setLobbyId(isLobbyExistingRes.data.isLobbyExisting.lobbyId);
       addUserToLobbyMutation({
         variables: {
-          lobbyId,
+          lobbyId: isLobbyExistingRes.data.isLobbyExisting.lobbyId,
           userId,
         },
       });
-      handleCloseModal();
-    } else {
-      setLobbyModal(true);
     }
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeUnload", handleBeforeUnload);
@@ -227,15 +190,11 @@ function App(): JSX.Element {
         videoUrl,
         setVideo: handleSetVideo,
         darkModeToggle: handleDarkModeToggle,
+        setLobbyId: handleSetLobbyId,
       }}
     >
       <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
         <div className="App">
-          <LobbyModal
-            opened={lobbyModal}
-            createLobby={createLobby}
-            handleCloseModal={handleCloseModal}
-          />
           <Layout />
         </div>
       </ThemeProvider>
