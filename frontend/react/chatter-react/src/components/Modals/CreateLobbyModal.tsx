@@ -9,7 +9,7 @@ import { KeyboardEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UsrContxt } from "../../App";
 import { ADD_USER_TO_LOBBY, CREATE_LOBBY } from "../../queries/App";
-import { NONE_USERID } from "../../util/constants";
+import { NONE_LOBBY_ID } from "../../util/constants";
 import { validateYtUrl } from "../../util/helpers";
 import Lobby from "../Chatter/interface/Lobby";
 import GenericResponse from "../Chatter/interface/response/GenericResponse";
@@ -97,7 +97,7 @@ const CreateLobbyModal = ({ opened, handleCloseModal }: LobbyModalProps) => {
   const onCloseHandler = (_: object, reason: string) => {
     if (
       (reason !== "backdropClick" && reason !== "escapeKeyDown") ||
-      userContext.lobbyId !== NONE_USERID
+      userContext.lobbyId !== NONE_LOBBY_ID
     )
       handleCloseModal();
   };

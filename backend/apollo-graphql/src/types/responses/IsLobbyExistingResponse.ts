@@ -5,6 +5,7 @@ const IsLobbyExistingResponse = gql`
     code: Int!
     success: Boolean
     isExisting: Boolean
+    lobbyId: String
   }
 `;
 

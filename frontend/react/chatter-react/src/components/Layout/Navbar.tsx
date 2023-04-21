@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import { SxProps, useTheme } from "@mui/material/styles";
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
-import { NONE_USERID } from "../../util/constants";
+import { NONE_LOBBY_ID } from "../../util/constants";
 import ChangeUsernameModal from "../Modals/ChangeUsernameModal";
 import CreateLobbyModal from "../Modals/CreateLobbyModal";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
@@ -57,21 +57,12 @@ function Navbar(): JSX.Element {
   };
 
   useEffect(() => {
-    if (userContext.lobbyId === NONE_USERID) {
+    if (userContext.lobbyId === NONE_LOBBY_ID) {
       openCreateLobbyModal();
     } else {
       setCreateLobbyModal(false);
     }
   }, [userContext]);
-
-  const shareBtnSx: SxProps = {
-    color: theme.common.text.primary,
-    marginRight: "24px",
-    backgroundColor: "#5D91B3",
-    "&:hover": {
-      backgroundColor: "#5D91B3",
-    },
-  };
 
   const appBarStyle: SxProps = {
     bgcolor: theme.appBar.bgColor,

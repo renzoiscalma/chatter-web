@@ -23,7 +23,7 @@ import {
 } from "./queries/App";
 import { UPDATE_VIDEO } from "./queries/Video";
 import { darkTheme, lightTheme } from "./theme";
-import { NONE_USERID } from "./util/constants";
+import { NONE_LOBBY_ID } from "./util/constants";
 
 export const UsrContxt = createContext<UserContext>({
   username: "",
@@ -98,6 +98,7 @@ function App(): JSX.Element {
   };
 
   const handleBeforeUnload = (): void => {
+    console.log("ASKLDJASD");
     removeUserToLobbyMutation({
       variables: {
         lobbyId,
@@ -123,12 +124,12 @@ function App(): JSX.Element {
         },
       });
     } else {
-      setLobbyId(NONE_USERID);
+      setLobbyId(NONE_LOBBY_ID);
     }
   }, []);
 
   useEffect(() => {
-    if (lobbyId && lobbyId !== NONE_USERID)
+    if (lobbyId && lobbyId !== NONE_LOBBY_ID)
       videoUrlMutation({
         variables: {
           statusInput: {
@@ -161,17 +162,15 @@ function App(): JSX.Element {
   }, [newUserMutationRes.data]);
 
   useEffect(() => {
-    if (!isLobbyExistingRes.called || isLobbyExistingRes.loading) return;
-    const lobbyId = searchParams.get("lobbyId") || "";
     if (
+      userId &&
       isLobbyExistingRes.data &&
       isLobbyExistingRes.data.isLobbyExisting.isExisting
     ) {
-      handleSetLobbyId(lobbyId);
-      // add user to lobby BE
+      setLobbyId(isLobbyExistingRes.data.isLobbyExisting.lobbyId);
       addUserToLobbyMutation({
         variables: {
-          lobbyId,
+          lobbyId: isLobbyExistingRes.data.isLobbyExisting.lobbyId,
           userId,
         },
       });
