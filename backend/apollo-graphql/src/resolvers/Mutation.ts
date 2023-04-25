@@ -6,13 +6,13 @@ import VideoCollection from "../db/interface/VideoSchema";
 import { AddMessageResponse } from "../models/AddMessageResponse";
 import { User } from "../models/User";
 import { pubsub } from "../redis";
+import { generateNewUser } from "../utils/NameGenerators";
 import {
   MESSAGE_ADDED_TOPIC,
   USERNAME_CHANGED_TOPIC,
   USER_LIST_UPDATED_TOPIC,
   VIDEO_STATUS_TOPIC,
 } from "../utils/const";
-import { generateNewUser } from "../utils/NameGenerators";
 
 interface AddMessageArgs {
   from: string;
@@ -231,8 +231,9 @@ const mutationResolver = {
       ___: any,
       ____: any
     ) => {
-      const { currTime, lobbyId, status, url } = statusInput;
+      const { currTime, lobbyId, status, url, userId } = statusInput;
       const lobby = await LobbyCollection.findById(lobbyId);
+      const userDetails = await UserCollection.findById(userId);
       if (!lobby) return null;
       const videoStatusfilter = { _id: lobby.videoStatus };
       const videoStatusUpdate = {
@@ -249,12 +250,14 @@ const mutationResolver = {
           new: true,
         }
       );
+
       await pubsub.publish(VIDEO_STATUS_TOPIC, {
         videoStatusChanged: {
           code: videoStatus ? 200 : 500, //todo to be changed
           success: !!videoStatus,
           data: {
             ...statusInput,
+            changedBy: userDetails?.username,
           },
         },
       });
