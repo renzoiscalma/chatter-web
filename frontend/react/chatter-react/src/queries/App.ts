@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const ADD_NEW_USER = gql`
-  mutation {
+  mutation addNewUser {
     addNewUser {
       code
       success

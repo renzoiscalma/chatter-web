@@ -18,15 +18,17 @@ import {
   USERNAME_CHANGED_SUBSCRIPTION,
   USER_LIST_CHANGED_SUBSCRIPTION,
 } from "../../queries/Chatter";
-import Message from "./interface/Message";
-import GenericResponse from "./interface/response/GenericResponse";
-import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
-import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
-import SendStatus from "./interface/SendStatus";
+import { VIDEO_STATUS_SUBSCRIPTION } from "../../queries/Video";
 import MessageBar from "./MessageBar";
 import Messages from "./Messages";
 import Sender from "./Sender";
 import UserList from "./UserList";
+import Message from "./interface/Message";
+import SendStatus from "./interface/SendStatus";
+import GenericResponse from "./interface/response/GenericResponse";
+import NewMessageSubResponse from "./interface/response/NewMessageSubResponse";
+import UsernameChangedSubResponse from "./interface/response/UsernameChangedSubResponse";
+import VideoStatusTopicResponse from "./interface/response/VideoStatusTopicResponse";
 interface LobbyIdProps {
   lobbyId: string;
 }
@@ -178,6 +180,16 @@ function Chatter(props: ChatterProps) {
     },
   });
 
+  const videoChanges: SubscriptionResult<
+    { videoStatusChanged: VideoStatusTopicResponse },
+    { lobbyId: LobbyIdProps; userId: UserIdProps }
+  > = useSubscription(VIDEO_STATUS_SUBSCRIPTION, {
+    variables: {
+      lobbyId: userContext.lobbyId,
+      userId: userContext.userId,
+    },
+  });
+
   const chatterContainer: SxProps = {
     height: "100%",
     display: "flex",
@@ -305,6 +317,35 @@ function Chatter(props: ChatterProps) {
       }
     }
   }, [userListChangedSub]);
+
+  useEffect(() => {
+    if (videoChanges.data?.videoStatusChanged) {
+      let { changedBy, currTime, status, url } =
+        videoChanges.data?.videoStatusChanged.data;
+      let payload = {
+        message: "",
+        sender: "Admin",
+        to: "Everyone",
+        sendType: -1,
+      };
+      if (url) {
+        payload.message = `${changedBy} has changed the video`;
+      }
+      if (status == 1) {
+        payload.message = `${changedBy} has played the video`;
+      }
+      if (status == 2) {
+        payload.message = `${changedBy} has paused the video`;
+      }
+      if (status == 3) {
+        payload.message = `${changedBy} is buffering...`;
+      }
+      dispatchMessage({
+        type: "NEW_MESSAGE",
+        payload: [payload],
+      });
+    }
+  }, [videoChanges]);
 
   const dispatchMessageEnteredLobby = (user: string): void => {
     dispatchMessage({
