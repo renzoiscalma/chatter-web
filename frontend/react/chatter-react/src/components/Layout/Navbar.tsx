@@ -14,9 +14,9 @@ import { MouseEvent, useContext, useEffect, useState } from "react";
 import { UsrContxt } from "../../App";
 import { NONE_LOBBY_ID } from "../../util/constants";
 import ChangeUsernameModal from "../Modals/ChangeUsernameModal";
+import ChangeVideoModal from "../Modals/ChangeVideoModal";
 import CreateLobbyModal from "../Modals/CreateLobbyModal";
 import ShareLobbyModal from "../Modals/ShareLobbyModal";
-import ChangeVideoModal from "../Modals/SimpleModal";
 import NavBarMenu from "./NavBarMenu";
 
 function Navbar(): JSX.Element {
