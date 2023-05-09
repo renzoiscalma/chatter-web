@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 
 import connectMongoose from "./db/connect";
 
-import MessageCollection from "./db/interface/MessageSchema";
-import LobbyCollection from "./db/interface/LobbySchema";
-import UserCollection from "./db/interface/UserSchema";
 import startApolloServer from "./apollo";
+import LobbyCollection from "./db/interface/LobbySchema";
+import MessageCollection from "./db/interface/MessageSchema";
+import UserCollection from "./db/interface/UserSchema";
 
-import startRedisServer from "./redis";
 import VideoCollection from "./db/interface/VideoSchema";
+import startRedisServer from "./redis";
 
 dotenv.config();
 
