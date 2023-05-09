@@ -9,6 +9,7 @@ export const VIDEO_STATUS_SUBSCRIPTION = gql`
         status
         currTime
         url
+        changedBy
       }
     }
   }

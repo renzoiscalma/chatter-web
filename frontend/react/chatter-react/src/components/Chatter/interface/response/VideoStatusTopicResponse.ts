@@ -5,6 +5,7 @@ interface VideoStatusTopicResponse extends GenericResponse {
     status: number;
     currTime: number;
     url: string;
+    changedBy: string;
   };
 }
 

@@ -7,7 +7,6 @@ import {
   useSubscription,
 } from "@apollo/client";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
 import { SxProps } from "@mui/system";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactPlayer, { ReactPlayerProps } from "react-player";
@@ -48,14 +47,18 @@ const defaultPlayerProps: ReactPlayerProps = {
 };
 
 function Video(): JSX.Element {
-  const YOUTUBE_URL = "https://www.youtube.com/watch?v=";
   const userContext = useContext(UsrContxt);
   const [playerProps, setPlayerProps] =
     useState<ReactPlayerProps>(defaultPlayerProps);
+  const [updateFromBE, setUpdateFromBE] = useState<boolean>(false);
   const ytContainer = useRef<HTMLDivElement>(null);
-  const videoSize = useContainerDimension(ytContainer);
   const playerRef = useRef<ReactPlayer>(null);
-  const theme = useTheme();
+  const videoSize = useContainerDimension(ytContainer);
+
+  // needed to track the correct state on callbacks
+  // SOURCE: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
+  const updateFromBERef = useRef<boolean>();
+  updateFromBERef.current = updateFromBE;
 
   const videoChanges: SubscriptionResult<
     { videoStatusChanged: VideoStatusTopicResponse },
@@ -99,16 +102,18 @@ function Video(): JSX.Element {
       ...values,
       playing: true,
     }));
-    updateVideo({
-      variables: {
-        statusInput: {
-          currTime: +playerRef.current.getCurrentTime().toFixed(0),
-          lobbyId,
-          userId,
-          status: PlayerState.PLAYING,
+    if (!updateFromBERef.current)
+      updateVideo({
+        variables: {
+          statusInput: {
+            currTime: +playerRef.current.getCurrentTime().toFixed(0),
+            lobbyId,
+            userId,
+            status: PlayerState.PLAYING,
+          },
         },
-      },
-    });
+      });
+    setUpdateFromBE(false);
   };
 
   const onPauseHandler = (param: any): void => {
@@ -118,16 +123,18 @@ function Video(): JSX.Element {
       ...values,
       playing: false,
     }));
-    updateVideo({
-      variables: {
-        statusInput: {
-          currTime: +playerRef.current.getCurrentTime().toFixed(0),
-          lobbyId,
-          userId,
-          status: PlayerState.PAUSED,
+    if (!updateFromBERef.current)
+      updateVideo({
+        variables: {
+          statusInput: {
+            currTime: +playerRef.current.getCurrentTime().toFixed(0),
+            lobbyId,
+            userId,
+            status: PlayerState.PAUSED,
+          },
         },
-      },
-    });
+      });
+    setUpdateFromBE(false);
   };
 
   const getPlayerState = (eventData: number): PlayerState => {
@@ -149,6 +156,8 @@ function Video(): JSX.Element {
 
   useEffect(() => {
     if (videoChanges?.data?.videoStatusChanged) {
+      console.log(videoChanges?.data?.videoStatusChanged, "update from BE");
+      setUpdateFromBE(true);
       const { currTime, status, url } =
         videoChanges.data.videoStatusChanged.data;
       if (url) {
@@ -179,8 +188,6 @@ function Video(): JSX.Element {
             playing: false,
           }));
           break;
-        case PlayerState.UNSTARTED:
-        case PlayerState.ENDED:
         default:
           break;
       }

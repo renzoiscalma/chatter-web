@@ -5,6 +5,7 @@ const VideoStatus = gql`
     status: Int!
     currTime: Int
     url: String
+    changedBy: String
   }
 `;
 

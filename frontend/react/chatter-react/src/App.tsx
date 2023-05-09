@@ -135,7 +135,7 @@ function App(): JSX.Element {
           statusInput: {
             url: videoUrl,
             lobbyId: lobbyId,
-            userId: userId + "-", // needed to update self's video as well
+            userId: userId, // needed to update self's video as well
             currTime: 0,
             status: -1,
           },
