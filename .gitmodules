@@ -1,3 +1,6 @@
 [submodule "chatter-web-fe"]
 	path = chatter-web-fe
 	url = https://github.com/renzoiscalma/chatter-web-fe
+[submodule "backend"]
+	path = backend
+	url = https://github.com/renzoiscalma/chatter-web-be
