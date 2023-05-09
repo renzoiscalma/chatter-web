@@ -1,0 +1,3 @@
+[submodule "chatter-web-fe"]
+	path = chatter-web-fe
+	url = https://github.com/renzoiscalma/chatter-web-fe
